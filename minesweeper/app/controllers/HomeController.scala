@@ -4,6 +4,8 @@ import javax.inject._
 import play.api._
 import play.api.mvc._
 import play.twirl.api.Html
+import scala.xml.XML
+import java.nio.file.Paths
 
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
 import de.htwg.se.minesweeper.model.{Status => GameStatus, Symbols}
@@ -61,9 +63,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def uncoverField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
     gameController.uncoverField(x, y)
     if (gameController.game.gameState == GameStatus.Lost || gameController.game.gameState == GameStatus.Won) {
-      val htmlText = s"<pre>${"Game over. Status: " + gameController.game.gameState}</pre>"
-      val html: Html = Html(htmlText)
-      Ok(views.html.main(title = "Minesweeper")(content = html))
+      Ok(views.html.gameOverScreen())
     } else {
       Redirect(routes.HomeController.gameGui()) // Redirect to GUI
     }
@@ -72,9 +72,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def flagField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
     gameController.flagField(x, y)
     if (gameController.game.gameState == GameStatus.Lost || gameController.game.gameState == GameStatus.Won) {
-      val htmlText = s"<pre>${"Game over. Status: " + gameController.game.gameState}</pre>"
-      val html: Html = Html(htmlText)
-      Ok(views.html.main(title = "Minesweeper")(content = html))
+      Ok(views.html.gameOverScreen())
     } else {
       Redirect(routes.HomeController.gameGui()) // Redirect to GUI
     }
@@ -96,8 +94,39 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def loadGame() = Action { implicit request: Request[AnyContent] =>
-    gameController.setField(fileIOXML.load)
+    gameController.setField(this.loadXML)
     Redirect(routes.HomeController.gameGui())
+  }
+
+  def loadXML: Field = {
+    println(Paths.get("field.xml").toAbsolutePath.toString)
+    val file = scala.xml.XML.loadFile("field.xml")
+    val size = (file \\ "field" \ "@size").text.toInt
+    val matrix = (file \\ "cell").map { cellNode =>
+      val row = (cellNode \ "@row").text.toInt
+      val col = (cellNode \ "@col").text.toInt
+      val value = (cellNode \ "@value").text match {
+        case "-" => Symbols.Covered
+        case "*" => Symbols.Bomb
+        case " " => Symbols.Empty
+        case "f" => Symbols.Flag
+        case "0" => Symbols.Zero
+        case "1" => Symbols.One
+        case "2" => Symbols.Two
+        case "3" => Symbols.Three
+        case "4" => Symbols.Four
+        case "5" => Symbols.Five
+        case "6" => Symbols.Six
+        case "7" => Symbols.Seven
+        case "8" => Symbols.Eight
+      }
+      (row, col, value)
+    }
+    val newField = new Field(size, Symbols.Covered)
+    matrix.foldLeft(newField) { case (field, (row, col, value)) =>
+      field.matrix.replaceCell(row, col, value)
+      field
+    }
   }
 
 }
