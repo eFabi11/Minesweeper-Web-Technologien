@@ -12,12 +12,7 @@ import de.htwg.se.minesweeper.model.game.Game
 import de.htwg.se.minesweeper.controller.controller.Controller
 import de.htwg.se.minesweeper.util.StdInInputSource
 import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty, MediumDifficulty, HardDifficulty}
-import de.htwg.se.minesweeper.util.FileIOJSON
-import java.io.File
-import io.circe.parser._
-import io.circe.syntax._
-
-
+import de.htwg.se.minesweeper.util.FileIOXML
 
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
@@ -26,9 +21,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   val gameField = new Field(game.gridSize, Symbols.Covered)
   val gameController = new Controller(gameField, game)
 
-
-  val fileIOJSON = new FileIOJSON()
-
+  val fileIOXML = new FileIOXML()
 
   // Initialize TUI and GUI
   val gameTui = new TUI(gameController, StdInInputSource)
@@ -97,27 +90,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Redirect(routes.HomeController.gameGui()) // Redirect to GUI
   }
 
-   def saveGame() = Action { implicit request: Request[AnyContent] =>
-    fileIOJSON.save(gameController.field)
+  def saveGame() = Action { implicit request: Request[AnyContent] =>
+    fileIOXML.save(gameController.field)
     Redirect(routes.HomeController.gameGui())
   }
 
   def loadGame() = Action { implicit request: Request[AnyContent] =>
-    val file = new File("field.json")
-    if (file.exists()) {
-      try {
-        val loadedField = fileIOJSON.load
-        gameController.setField(loadedField)
-        Redirect(routes.HomeController.gameGui())
-      } catch {
-        case e: Exception =>
-          Redirect(routes.HomeController.gameGui())
-      }
-    } else {
-      Redirect(routes.HomeController.gameGui())
-    }
+    gameController.setField(fileIOXML.load)
+    Redirect(routes.HomeController.gameGui())
   }
 
-
-   
 }

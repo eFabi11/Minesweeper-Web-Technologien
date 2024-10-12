@@ -12,7 +12,7 @@ GET     /flag/:x/:y                 controllers.HomeController.flagField(x: Int,
 GET     /undo                       controllers.HomeController.undo()
 GET     /restart                    controllers.HomeController.restart()
 GET     /saveGame                   controllers.HomeController.saveGame()
-# GET     /loadGame                   controllers.HomeController.loadGame()
+GET     /loadGame                   controllers.HomeController.loadGame()
 
 
 # Map static resources from the /public folder to the /assets URL path
