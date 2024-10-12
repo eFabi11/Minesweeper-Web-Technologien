@@ -12,3 +12,19 @@ target
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 /minesweeper/project/build.properties
+.metals/metals.lock.db
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/.ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.jar__md5
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/.ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.jar__sha1
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/.ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.jar.checked
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/.ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.pom__md5
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/.ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.pom__sha1
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/.ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.pom.checked
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/ivy/ivy/2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2/ivy-2.3.0-sbt-396a783bba347016e7fe30dacc60d355be607fe2.pom
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/.jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.jar__md5
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/.jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.jar__sha1
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/.jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.jar.checked
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/.jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.pom__md5
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/.jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.pom__sha1
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/.jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.pom.checked
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.jar
+minesweeper/null/Coursier/cache/v1/https/repo1.maven.org/maven2/org/scala-sbt/jline/jline/2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79/jline-2.14.7-sbt-9c3b6aca11c57e339441442bbf58e550cdfecb79.pom
