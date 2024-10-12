@@ -10,6 +10,13 @@ scalaVersion := "2.13.15"
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
 
+libraryDependencies ++= Seq(
+  "io.circe" %% "circe-core" % "0.14.1",
+  "io.circe" %% "circe-generic" % "0.14.1",
+  "io.circe" %% "circe-parser" % "0.14.1"
+)
+
+
 unmanagedBase := baseDirectory.value / "lib"
 
 scalacOptions += "-Ytasty-reader"
