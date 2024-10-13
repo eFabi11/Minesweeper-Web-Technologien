@@ -94,15 +94,22 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def loadGame() = Action { implicit request: Request[AnyContent] =>
-    gameController.setField(this.loadXML)
+    val field = loadXML
+    println(field.toString)
+    gameController.setField(field)
+    println(field.toString)
     Redirect(routes.HomeController.gameGui())
   }
 
   def loadXML: Field = {
     println(Paths.get("field.xml").toAbsolutePath.toString)
     val file = scala.xml.XML.loadFile("field.xml")
+    println(file.toString)
     val size = (file \\ "field" \ "@size").text.toInt
-    val matrix = (file \\ "cell").map { cellNode =>
+
+    var field = new Field(size, Symbols.Covered)
+
+    (file \\ "cell").foreach { cellNode =>
       val row = (cellNode \ "@row").text.toInt
       val col = (cellNode \ "@col").text.toInt
       val value = (cellNode \ "@value").text match {
@@ -120,13 +127,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         case "7" => Symbols.Seven
         case "8" => Symbols.Eight
       }
-      (row, col, value)
+      field = field.copy(matrix = field.matrix.replaceCell(row, col, value))
     }
-    val newField = new Field(size, Symbols.Covered)
-    matrix.foldLeft(newField) { case (field, (row, col, value)) =>
-      field.matrix.replaceCell(row, col, value)
-      field
-    }
+    field
   }
 
 }
