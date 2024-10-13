@@ -96,17 +96,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def loadGame() = Action { implicit request: Request[AnyContent] =>
-    val field = loadXML
-    println(field.toString)
-    gameController.setField(field)
-    println(field.toString)
+    gameController.setField(loadXML)
+    gameController.setFirstMove(false)
+    gameController.game.gameState = GameStatus.Playing
     Redirect(routes.HomeController.gameGui())
   }
 
   def loadXML: Field = {
-    println(Paths.get("field.xml").toAbsolutePath.toString)
     val file = scala.xml.XML.loadFile("field.xml")
-    println(file.toString)
     val size = (file \\ "field" \ "@size").text.toInt
 
     var field = new Field(size, Symbols.Covered)
