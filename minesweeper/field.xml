@@ -4,8 +4,8 @@
     <cell row="0" col="2" value=" "/>
     <cell row="1" col="0" value="1"/>
     <cell row="1" col="1" value="1"/>
-    <cell row="1" col="2" value=" "/>
+    <cell row="1" col="2" value="1"/>
     <cell row="2" col="0" value="-"/>
-    <cell row="2" col="1" value="1"/>
-    <cell row="2" col="2" value=" "/>
+    <cell row="2" col="1" value="-"/>
+    <cell row="2" col="2" value="-"/>
 </field>

@@ -63,7 +63,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def uncoverField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
     gameController.uncoverField(x, y)
     if (gameController.game.gameState == GameStatus.Lost || gameController.game.gameState == GameStatus.Won) {
-      Ok(views.html.gameOverScreen())
+      val gameOverMessage = gameController.game.gameState.toString
+      Ok(views.html.gameOverScreen(gameOverMessage))
     } else {
       Redirect(routes.HomeController.gameGui()) // Redirect to GUI
     }
@@ -72,7 +73,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   def flagField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
     gameController.flagField(x, y)
     if (gameController.game.gameState == GameStatus.Lost || gameController.game.gameState == GameStatus.Won) {
-      Ok(views.html.gameOverScreen())
+      val gameOverMessage = gameController.game.gameState.toString
+      Ok(views.html.gameOverScreen(gameOverMessage))
     } else {
       Redirect(routes.HomeController.gameGui()) // Redirect to GUI
     }
