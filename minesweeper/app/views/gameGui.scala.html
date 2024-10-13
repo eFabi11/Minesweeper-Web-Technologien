@@ -22,8 +22,8 @@
                             val cellValue = controller.field.cell(x, y)
                             cellValue match {
                                 case Symbols.Covered => Html(
-                                    s"""<a href='@routes.HomeController.uncoverField(@x, @y)'>[ ]</a>
-                                    <a href='@routes.HomeController.flagField(@x, @y)'>🚩</a>"""
+                                    s"""<a href='${routes.HomeController.uncoverField(y, x).url}'>[ ]</a>
+                                        <a href='${routes.HomeController.flagField(y, x).url}'>🚩</a>"""
                                 )
                                 case Symbols.Flag => Html("🚩")
                                 case Symbols.Empty => Html("&nbsp;")
