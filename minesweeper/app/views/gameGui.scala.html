@@ -1,0 +1,52 @@
+@(controller: de.htwg.se.minesweeper.controller.controller.Controller)
+
+@import helper._
+@import de.htwg.se.minesweeper.model.Symbols
+
+@main("Minesweeper GUI") {
+    <h1>Minesweeper Game</h1>
+
+    <p>
+        <strong>Difficulty:</strong>
+        <a href='@routes.HomeController.setDifficulty("E")'>Easy</a> |
+        <a href='@routes.HomeController.setDifficulty("M")'>Medium</a> |
+        <a href='@routes.HomeController.setDifficulty("H")'>Hard</a>
+    </p>
+
+    <table border="1" cellpadding="5" cellspacing="0">
+        @for(y <- 0 until controller.field.size) {
+            <tr>
+                @for(x <- 0 until controller.field.size) {
+                    <td style="width:30px;height:30px;text-align:center;">
+                        @{
+                            val cellValue = controller.field.cell(x, y)
+                            cellValue match {
+                                case Symbols.Covered => Html(
+                                    s"""<a href='${routes.HomeController.uncoverField(y, x).url}'>[ ]</a>
+                                        <a href='${routes.HomeController.flagField(y, x).url}'>🚩</a>"""
+                                )
+                                case Symbols.Flag => Html("🚩")
+                                case Symbols.Empty => Html("&nbsp;")
+                                case Symbols.Bomb => Html("💣")
+                                case number => Html(number.toString)
+                            }
+                        }
+                    </td>
+                }
+            </tr>
+        }
+    </table>
+
+    <p>
+        <a href='@routes.HomeController.undo()'>Undo</a> |
+        <a href='@routes.HomeController.restart()'>Restart</a> |
+        <a href='@routes.HomeController.saveGame()'>Save Game</a> |
+        <a href='@routes.HomeController.loadGame()'>Load Game</a>
+    </p>
+
+    @if(controller.game.gameState == de.htwg.se.minesweeper.model.Status.Won) {
+        <p><strong>Congratulations, you won!</strong></p>
+    } else if(controller.game.gameState == de.htwg.se.minesweeper.model.Status.Lost) {
+        <p><strong>Sorry, you lost!</strong></p>
+    }
+}
