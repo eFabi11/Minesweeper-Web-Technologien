@@ -26,12 +26,16 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   val fileIOXML = new FileIOXML()
 
   // Initialize TUI and GUI
-  val gameTui = new TUI(gameController, StdInInputSource)
+  //val gameTui = new TUI(gameController, StdInInputSource)
   // Uncomment the GUI initialization
   // val gameGui = new MinesweeperGUI(gameController)
 
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
+  }
+
+  def gameHomepage() = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.gameHomepage())
   }
 
   // TUI Game Board

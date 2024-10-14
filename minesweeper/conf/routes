@@ -4,7 +4,8 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.gameGui()
+GET     /                           controllers.HomeController.gameHomepage()
+GET     /gui                        controllers.HomeController.gameGui()
 GET     /tui                        controllers.HomeController.gameTui()
 GET     /diff/:diff                 controllers.HomeController.setDifficulty(diff: String)
 GET     /uncover/:x/:y              controllers.HomeController.uncoverField(x: Int, y: Int)
