@@ -140,7 +140,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     }
     field
   }
-
+  
   def moveAndRename(): Unit = {
     val savesDir = new File("saves")
     if (!savesDir.exists()) savesDir.mkdirs()
@@ -186,7 +186,6 @@ def deleteGame(gameId: String) = Action { implicit request: Request[AnyContent] 
         Redirect(routes.HomeController.loadGamePage()).flashing("error" -> "Game file not found.")
     }
 }
-
 
 
 }
