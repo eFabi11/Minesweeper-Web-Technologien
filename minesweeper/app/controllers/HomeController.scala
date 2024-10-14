@@ -35,7 +35,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   // TUI Game Board
-  def gameBoard() = Action { implicit request: Request[AnyContent] =>
+  def gameTui() = Action { implicit request: Request[AnyContent] =>
     val gameBoardText = gameController.toString
     val htmlGameBoardText = s"<pre>${gameBoardText.replace("\n", "<br>")}</pre>"
     val html: Html = Html(htmlGameBoardText)
