@@ -5,7 +5,8 @@ import play.api._
 import play.api.mvc._
 import play.twirl.api.Html
 import scala.xml.XML
-import java.nio.file.Paths
+import java.io.File
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
 import de.htwg.se.minesweeper.model.{Status => GameStatus, Symbols}
@@ -92,6 +93,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def saveGame() = Action { implicit request: Request[AnyContent] =>
     fileIOXML.save(gameController.field)
+    moveAndRename()
     Redirect(routes.HomeController.gameGui())
   }
 
@@ -129,6 +131,24 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       field = field.copy(matrix = field.matrix.replaceCell(row, col, value))
     }
     field
+  }
+
+  def moveAndRename(): Unit = {
+    val savesDir = new File("saves")
+    if (!savesDir.exists()) savesDir.mkdirs()
+
+    val originalFile = new File("field.xml")
+    if (originalFile.exists()) {
+      val nextId = getNextFileId(savesDir)
+      val renamedFile = new File(s"saves/field_$nextId.xml")
+      Files.move(Paths.get(originalFile.getPath), Paths.get(renamedFile.getPath), StandardCopyOption.REPLACE_EXISTING)
+    }
+  }
+
+  def getNextFileId(dir: File): Int = {
+    val xmlFiles = dir.listFiles().filter(_.getName.endsWith(".xml"))
+    val fileNumbers = xmlFiles.map(_.getName.stripPrefix("field_").stripSuffix(".xml").toInt)
+    if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
   }
 
 }
