@@ -5,7 +5,8 @@ import play.api._
 import play.api.mvc._
 import play.twirl.api.Html
 import scala.xml.XML
-import java.nio.file.Paths
+import java.io.File
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
 import de.htwg.se.minesweeper.model.{Status => GameStatus, Symbols}
@@ -15,6 +16,10 @@ import de.htwg.se.minesweeper.controller.controller.Controller
 import de.htwg.se.minesweeper.util.StdInInputSource
 import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty, MediumDifficulty, HardDifficulty}
 import de.htwg.se.minesweeper.util.FileIOXML
+
+import java.nio.file.{Files, Paths}
+import java.util.stream.Collectors
+import scala.collection.JavaConverters._
 
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
@@ -32,6 +37,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def index() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.index())
+  }
+
+  def gameHomepage() = Action { implicit request: Request[AnyContent] =>
+    Ok(views.html.gameHomepage())
   }
 
   // TUI Game Board
@@ -92,18 +101,19 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def saveGame() = Action { implicit request: Request[AnyContent] =>
     fileIOXML.save(gameController.field)
+    moveAndRename()
     Redirect(routes.HomeController.gameGui())
   }
 
-  def loadGame() = Action { implicit request: Request[AnyContent] =>
-    gameController.setField(loadXML)
+  def loadGame(name: String) = Action { implicit request: Request[AnyContent] =>
+    gameController.setField(loadXML(name))
     gameController.setFirstMove(false)
     gameController.game.gameState = GameStatus.Playing
     Redirect(routes.HomeController.gameGui())
   }
 
-  def loadXML: Field = {
-    val file = scala.xml.XML.loadFile("field.xml")
+  def loadXML(name: String): Field = {
+    val file = scala.xml.XML.loadFile(s"saves/$name.xml")
     val size = (file \\ "field" \ "@size").text.toInt
 
     var field = new Field(size, Symbols.Covered)
@@ -130,5 +140,52 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     }
     field
   }
+  
+  def moveAndRename(): Unit = {
+    val savesDir = new File("saves")
+    if (!savesDir.exists()) savesDir.mkdirs()
+
+    val originalFile = new File("field.xml")
+    if (originalFile.exists()) {
+      val nextId = getNextFileId(savesDir)
+      val renamedFile = new File(s"saves/field_$nextId.xml")
+      Files.move(Paths.get(originalFile.getPath), Paths.get(renamedFile.getPath), StandardCopyOption.REPLACE_EXISTING)
+    }
+  }
+
+  def getNextFileId(dir: File): Int = {
+    val xmlFiles = dir.listFiles().filter(_.getName.endsWith(".xml"))
+    val fileNumbers = xmlFiles.map(_.getName.stripPrefix("field_").stripSuffix(".xml").toInt)
+    if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
+  }
+
+  def loadGamePage() = Action { implicit request: Request[AnyContent] =>
+    val games = listSavedGamesImpl()  // Direktes Aufrufen der Implementierung, die die Dateiliste zurückgibt
+    Ok(views.html.loadGamePage(games))
+}
+
+// Hilfsmethode, die tatsächlich die Spiele aus dem Verzeichnis ausliest
+def listSavedGamesImpl(): Seq[(String, String)] = {
+    val savesDir = Paths.get("saves")
+    val saveFiles = Files.list(savesDir).filter(p => p.toString.endsWith(".xml")).collect(Collectors.toList()).asScala
+
+    val games = saveFiles.map(file => {
+        val fileName = file.getFileName.toString
+        val gameId = fileName.substring(0, fileName.lastIndexOf("."))
+        (gameId, fileName)  // Tuple containing the game ID and the file name
+    })
+    games.toSeq
+}
+
+def deleteGame(gameId: String) = Action { implicit request: Request[AnyContent] =>
+    val filePath = Paths.get(s"saves/$gameId.xml")
+    if (Files.exists(filePath)) {
+        Files.delete(filePath)
+        Redirect(routes.HomeController.loadGamePage()).flashing("success" -> "Game deleted successfully.")
+    } else {
+        Redirect(routes.HomeController.loadGamePage()).flashing("error" -> "Game file not found.")
+    }
+}
+
 
 }

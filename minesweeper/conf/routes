@@ -4,7 +4,8 @@
 # ~~~~
 
 # An example controller showing a sample home page
-GET     /                           controllers.HomeController.gameGui()
+GET     /                           controllers.HomeController.gameHomepage()
+GET     /gui                        controllers.HomeController.gameGui()
 GET     /tui                        controllers.HomeController.gameTui()
 GET     /diff/:diff                 controllers.HomeController.setDifficulty(diff: String)
 GET     /uncover/:x/:y              controllers.HomeController.uncoverField(x: Int, y: Int)
@@ -12,7 +13,9 @@ GET     /flag/:x/:y                 controllers.HomeController.flagField(x: Int,
 GET     /undo                       controllers.HomeController.undo()
 GET     /restart                    controllers.HomeController.restart()
 GET     /saveGame                   controllers.HomeController.saveGame()
-GET     /loadGame                   controllers.HomeController.loadGame()
+GET     /loadGamePage               controllers.HomeController.loadGamePage()
+GET     /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
+GET     /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
 
 
 # Map static resources from the /public folder to the /assets URL path
