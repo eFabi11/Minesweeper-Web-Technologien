@@ -17,6 +17,10 @@ import de.htwg.se.minesweeper.util.StdInInputSource
 import de.htwg.se.minesweeper.difficulty.{DifficultyStrategy, EasyDifficulty, MediumDifficulty, HardDifficulty}
 import de.htwg.se.minesweeper.util.FileIOXML
 
+import java.nio.file.{Files, Paths}
+import java.util.stream.Collectors
+import scala.collection.JavaConverters._
+
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
 
@@ -109,7 +113,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def loadXML(name: String): Field = {
-    val file = scala.xml.XML.loadFile("saves/" + name)
+    val file = scala.xml.XML.loadFile(s"saves/$name.xml")
     val size = (file \\ "field" \ "@size").text.toInt
 
     var field = new Field(size, Symbols.Covered)
@@ -154,5 +158,35 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     val fileNumbers = xmlFiles.map(_.getName.stripPrefix("field_").stripSuffix(".xml").toInt)
     if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
   }
+
+  def loadGamePage() = Action { implicit request: Request[AnyContent] =>
+    val games = listSavedGamesImpl()  // Direktes Aufrufen der Implementierung, die die Dateiliste zurückgibt
+    Ok(views.html.loadGamePage(games))
+}
+
+// Hilfsmethode, die tatsächlich die Spiele aus dem Verzeichnis ausliest
+def listSavedGamesImpl(): Seq[(String, String)] = {
+    val savesDir = Paths.get("saves")
+    val saveFiles = Files.list(savesDir).filter(p => p.toString.endsWith(".xml")).collect(Collectors.toList()).asScala
+
+    val games = saveFiles.map(file => {
+        val fileName = file.getFileName.toString
+        val gameId = fileName.substring(0, fileName.lastIndexOf("."))
+        (gameId, fileName)  // Tuple containing the game ID and the file name
+    })
+    games.toSeq
+}
+
+def deleteGame(gameId: String) = Action { implicit request: Request[AnyContent] =>
+    val filePath = Paths.get(s"saves/$gameId.xml")
+    if (Files.exists(filePath)) {
+        Files.delete(filePath)
+        Redirect(routes.HomeController.loadGamePage()).flashing("success" -> "Game deleted successfully.")
+    } else {
+        Redirect(routes.HomeController.loadGamePage()).flashing("error" -> "Game file not found.")
+    }
+}
+
+
 
 }
