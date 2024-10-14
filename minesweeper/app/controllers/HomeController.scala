@@ -26,7 +26,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   val fileIOXML = new FileIOXML()
 
   // Initialize TUI and GUI
-  val gameTui = new TUI(gameController, StdInInputSource)
+  //val gameTui = new TUI(gameController, StdInInputSource)
   // Uncomment the GUI initialization
   // val gameGui = new MinesweeperGUI(gameController)
 
