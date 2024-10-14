@@ -5,7 +5,8 @@ import play.api._
 import play.api.mvc._
 import play.twirl.api.Html
 import scala.xml.XML
-import java.nio.file.Paths
+import java.io.File
+import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
 import de.htwg.se.minesweeper.model.{Status => GameStatus, Symbols}
@@ -26,7 +27,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   val fileIOXML = new FileIOXML()
 
   // Initialize TUI and GUI
-  //val gameTui = new TUI(gameController, StdInInputSource)
+  // val gameTui = new TUI(gameController, StdInInputSource)
   // Uncomment the GUI initialization
   // val gameGui = new MinesweeperGUI(gameController)
 
@@ -96,18 +97,19 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def saveGame() = Action { implicit request: Request[AnyContent] =>
     fileIOXML.save(gameController.field)
+    moveAndRename()
     Redirect(routes.HomeController.gameGui())
   }
 
-  def loadGame() = Action { implicit request: Request[AnyContent] =>
-    gameController.setField(loadXML)
+  def loadGame(name: String) = Action { implicit request: Request[AnyContent] =>
+    gameController.setField(loadXML(name))
     gameController.setFirstMove(false)
     gameController.game.gameState = GameStatus.Playing
     Redirect(routes.HomeController.gameGui())
   }
 
-  def loadXML: Field = {
-    val file = scala.xml.XML.loadFile("field.xml")
+  def loadXML(name: String): Field = {
+    val file = scala.xml.XML.loadFile("saves/" + name)
     val size = (file \\ "field" \ "@size").text.toInt
 
     var field = new Field(size, Symbols.Covered)
@@ -133,6 +135,24 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       field = field.copy(matrix = field.matrix.replaceCell(row, col, value))
     }
     field
+  }
+
+  def moveAndRename(): Unit = {
+    val savesDir = new File("saves")
+    if (!savesDir.exists()) savesDir.mkdirs()
+
+    val originalFile = new File("field.xml")
+    if (originalFile.exists()) {
+      val nextId = getNextFileId(savesDir)
+      val renamedFile = new File(s"saves/field_$nextId.xml")
+      Files.move(Paths.get(originalFile.getPath), Paths.get(renamedFile.getPath), StandardCopyOption.REPLACE_EXISTING)
+    }
+  }
+
+  def getNextFileId(dir: File): Int = {
+    val xmlFiles = dir.listFiles().filter(_.getName.endsWith(".xml"))
+    val fileNumbers = xmlFiles.map(_.getName.stripPrefix("field_").stripSuffix(".xml").toInt)
+    if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
   }
 
 }
