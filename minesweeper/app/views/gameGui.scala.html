@@ -4,49 +4,31 @@
 @import de.htwg.se.minesweeper.model.Symbols
 
 @main("Minesweeper GUI") {
-    <h1>Minesweeper Game</h1>
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <script src="@routes.Assets.versioned("javascripts/main.js")"></script>
 
-    <p>
-        <strong>Difficulty:</strong>
-        <a href='@routes.HomeController.setDifficulty("E")'>Easy</a> |
-        <a href='@routes.HomeController.setDifficulty("M")'>Medium</a> |
-        <a href='@routes.HomeController.setDifficulty("H")'>Hard</a>
-    </p>
+    <h1 id="title">Minesweeper Game</h1>
 
-    <table border="1" cellpadding="5" cellspacing="0">
+    <div id="difficulty">
+        <a href='@routes.HomeController.setDifficulty("E")' class="difficulty-link">Easy</a> |
+        <a href='@routes.HomeController.setDifficulty("M")' class="difficulty-link">Medium</a> |
+        <a href='@routes.HomeController.setDifficulty("H")' class="difficulty-link">Hard</a>
+    </div>
+
+    <table id="gameBoard">
         @for(y <- 0 until controller.field.size) {
-            <tr>
+            <tr class="game-row">
                 @for(x <- 0 until controller.field.size) {
-                    <td style="width:30px;height:30px;text-align:center;">
-                        @{
-                            val cellValue = controller.field.cell(x, y)
-                            cellValue match {
-                                case Symbols.Covered => Html(
-                                    s"""<a href='${routes.HomeController.uncoverField(y, x).url}'>[ ]</a>
-                                        <a href='${routes.HomeController.flagField(y, x).url}'>🚩</a>"""
-                                )
-                                case Symbols.Flag => Html("🚩")
-                                case Symbols.Empty => Html("&nbsp;")
-                                case Symbols.Bomb => Html("💣")
-                                case number => Html(number.toString)
-                            }
-                        }
-                    </td>
+                    <td class="cell @(controller.field.cell(x, y).getClass.getSimpleName.toLowerCase)" data-x="@x" data-y="@y" onclick="uncoverCell(@x, @y)" oncontextmenu="flagCell(@x, @y); return false;"></td>
                 }
             </tr>
         }
     </table>
 
-    <p>
-        <a href='@routes.HomeController.undo()'>Undo</a> |
-        <a href='@routes.HomeController.restart()'>Restart</a> |
-        <a href='@routes.HomeController.saveGame()'>Save Game</a> |
-        <a href='@routes.HomeController.loadGamePage()'>Load Game</a>
-    </p>
-
-    @if(controller.game.gameState == de.htwg.se.minesweeper.model.Status.Won) {
-        <p><strong>Congratulations, you won!</strong></p>
-    } else if(controller.game.gameState == de.htwg.se.minesweeper.model.Status.Lost) {
-        <p><strong>Sorry, you lost!</strong></p>
-    }
+    <div id="controls">
+        <a href='@routes.HomeController.undo()' class="button">Undo</a>
+        <a href='@routes.HomeController.restart()' class="button">Restart</a>
+        <a href='@routes.HomeController.saveGame()' class="button">Save Game</a>
+        <a href='@routes.HomeController.loadGamePage()' class="button">Load Game</a>
+    </div>
 }
