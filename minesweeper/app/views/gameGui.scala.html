@@ -19,7 +19,22 @@
         @for(y <- 0 until controller.field.size) {
             <tr class="game-row">
                 @for(x <- 0 until controller.field.size) {
-                    <td class="cell @(controller.field.cell(x, y).getClass.getSimpleName.toLowerCase)" data-x="@x" data-y="@y" onclick="uncoverCell(@x, @y)" oncontextmenu="flagCell(@x, @y); return false;"></td>
+                    <td class="cell covered" data-x="@y" data-y="@x" 
+                        onclick="uncoverCell(@y, @x)" 
+                        oncontextmenu="flagCell(@y, @x); return false;">
+                        <!-- Der tatsächliche Inhalt wird mit CSS verborgen -->
+                        <span class="cell-content">
+                            @{
+                                controller.field.cell(x, y) match {
+                                    case Symbols.Covered => Html("")
+                                    case Symbols.Flag => Html("🚩")
+                                    case Symbols.Bomb => Html("💣")
+                                    case Symbols.Empty => Html("&nbsp;")
+                                    case number => Html(number.toString)
+                                }
+                            }
+                        </span>
+                    </td>
                 }
             </tr>
         }

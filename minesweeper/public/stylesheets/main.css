@@ -1,8 +1,30 @@
+/* Zellen, die noch nicht geöffnet sind (grün) */
+.cell.covered {
+    background-color: #28a745; /* Grün für nicht geöffnete Zellen */
+}
+
+/* Zellen, die geöffnet wurden (grau) */
+.cell.revealed {
+    background-color: #ddd !important; /* Grau für geöffnete Zellen */
+}
+
+/* Zellen, die markiert wurden (Flagge, gelb) */
+.cell.flag {
+    background-color: yellow !important; /* Gelb für markierte Zellen */
+}
+
+/* Zellen, die eine Bombe enthalten (rot, optional für Spielende) */
+.cell.bomb {
+    background-color: red !important;
+}
+
+/* Weitere Styling-Anpassungen */
 #gameBoard {
     width: auto;
     margin: 20px auto;
     border-collapse: collapse;
 }
+
 #title {
     text-align: center;
     color: navy;
@@ -16,18 +38,6 @@
     vertical-align: middle;
     cursor: pointer;
     font-size: 18px;
-}
-
-.cell.covered {
-    background-color: #ddd; /* Grau für unentdeckte Zellen */
-}
-
-.cell.flag {
-    background-color: yellow; /* Gelb für markierte Zellen */
-}
-
-.cell.bomb {
-    background-color: red; /* Rot, könnte nützlich sein, wenn das Spiel endet */
 }
 
 .button {
