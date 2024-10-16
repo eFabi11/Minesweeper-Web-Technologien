@@ -5,6 +5,7 @@ import play.api._
 import play.api.mvc._
 import play.twirl.api.Html
 import scala.xml.XML
+import play.api.libs.json._
 import java.io.File
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
@@ -48,7 +49,8 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   // GUI Game Board
   def gameGui() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.gameGui(gameController))
+    val gameState = gameController.game.gameState.toString
+    Ok(views.html.gameGui(gameController, gameState))
   }
 
   def setDifficulty(diff: String) = Action { implicit request: Request[AnyContent] =>
@@ -66,24 +68,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def uncoverField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
     gameController.uncoverField(x, y)
-    if (gameController.game.gameState == GameStatus.Lost || gameController.game.gameState == GameStatus.Won) {
-      val gameOverMessage = gameController.game.gameState.toString
-      println(getBombMatrix().toString)
-      Ok(views.html.gameOverScreen(gameOverMessage))
-    } else {
-      Redirect(routes.HomeController.gameGui()) // Redirect to GUI
-    }
+    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
   }
 
   def flagField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
     gameController.flagField(x, y)
-    if (gameController.game.gameState == GameStatus.Lost || gameController.game.gameState == GameStatus.Won) {
-      val gameOverMessage = gameController.game.gameState.toString
-      println(getBombMatrix().toString)
-      Ok(views.html.gameOverScreen(gameOverMessage))
-    } else {
-      Redirect(routes.HomeController.gameGui()) // Redirect to GUI
-    }
+    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
   }
 
   def undo() = Action { implicit request: Request[AnyContent] =>
@@ -96,8 +86,15 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Redirect(routes.HomeController.gameGui()) // Redirect to GUI
   }
 
-  def getBombMatrix(): Matrix[Symbols] = {
-    gameController.field.bomben
+  def getBombMatrix = Action { implicit request: Request[AnyContent] =>
+    val bombMatrix = gameController.field.bomben
+    val bombMatrixJson = bombMatrix.rows.map(row => row.map {
+      case Symbols.Bomb => "*"
+      case Symbols.Covered => "-"
+      case Symbols.Empty => " "
+      case number => number.toString
+    })
+    Ok(Json.toJson(bombMatrixJson)) // Convert bombMatrix to JSON and send response
   }
 
   def saveGame() = Action { implicit request: Request[AnyContent] =>

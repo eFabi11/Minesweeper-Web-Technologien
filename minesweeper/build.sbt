@@ -9,6 +9,7 @@ scalaVersion := "2.13.15"
 
 libraryDependencies += guice
 libraryDependencies += "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test
+libraryDependencies += "com.typesafe.play" %% "play-json" % "2.9.2"
 
 unmanagedBase := baseDirectory.value / "lib"
 

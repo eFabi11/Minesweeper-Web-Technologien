@@ -16,6 +16,8 @@ GET     /saveGame                   controllers.HomeController.saveGame()
 GET     /loadGamePage               controllers.HomeController.loadGamePage()
 GET     /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
 GET     /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
+GET     /getBombMatrix              controllers.HomeController.getBombMatrix()
+
 
 
 # Map static resources from the /public folder to the /assets URL path

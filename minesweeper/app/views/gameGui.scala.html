@@ -1,11 +1,13 @@
-@(controller: de.htwg.se.minesweeper.controller.controller.Controller)
+@(controller:de.htwg.se.minesweeper.controller.controller.Controller,
+  gameState: String
+)
 
 @import helper._
 @import de.htwg.se.minesweeper.model.Symbols
 
 @main("Minesweeper GUI") {
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
-    <script src="@routes.Assets.versioned("javascripts/main.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/main.js")"> </script>
 
     <h1 id="title">Minesweeper Game</h1>
 
@@ -15,12 +17,23 @@
         <a href='@routes.HomeController.setDifficulty("H")' class="difficulty-link">Hard</a>
     </div>
 
+    <script>
+        const gameState = "@gameState";
+
+        let gameOverHandled = false;
+
+        if ((gameState === "Lost" || gameState === "Won") && !gameOverHandled) {
+            displayBombs();
+            gameOverHandled = true;
+        }
+    </script>
+
     <table id="gameBoard">
         @for(y <- 0 until controller.field.size) {
             <tr class="game-row">
                 @for(x <- 0 until controller.field.size) {
-                    <td class="cell covered" data-x="@y" data-y="@x" 
-                        onclick="uncoverCell(@y, @x)" 
+                    <td class="cell covered" data-x="@y" data-y="@x"
+                        onclick="uncoverCell(@y, @x)"
                         oncontextmenu="flagCell(@y, @x); return false;">
                         <!-- Der tatsächliche Inhalt wird mit CSS verborgen -->
                         <span class="cell-content">
