@@ -1,62 +1,70 @@
-@(controller:de.htwg.se.minesweeper.controller.controller.Controller,
-  gameState: String
-)
+@(controller:de.htwg.se.minesweeper.controller.controller.Controller, gameState: String)
 
 @import helper._
 @import de.htwg.se.minesweeper.model.Symbols
 
 @main("Minesweeper GUI") {
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
-    <script src="@routes.Assets.versioned("javascripts/main.js")"> </script>
+    <script src="@routes.Assets.versioned("javascripts/main.js")"></script>
 
-    <h1 id="title">Minesweeper Game</h1>
-
-    <div id="difficulty">
-        <a href='@routes.HomeController.setDifficulty("E")' class="difficulty-link">Easy</a> |
-        <a href='@routes.HomeController.setDifficulty("M")' class="difficulty-link">Medium</a> |
-        <a href='@routes.HomeController.setDifficulty("H")' class="difficulty-link">Hard</a>
+    <!-- Hauptcontainer, der das Spielfeld und die Video-Hintergründe enthält -->
+    <div id="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="../assets/Minesweeper.mp4" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
     </div>
 
-    <script>
-        const gameState = "@gameState";
+    <!-- Zentrale Inhaltsbereich für das Spiel -->
+    <div id="content">
+        <h1 id="title">Minesweeper Game</h1>
 
-        let gameOverHandled = false;
+        <div id="difficulty">
+            <a href='@routes.HomeController.setDifficulty("E")' class="difficulty-link">Easy</a> |
+            <a href='@routes.HomeController.setDifficulty("M")' class="difficulty-link">Medium</a> |
+            <a href='@routes.HomeController.setDifficulty("H")' class="difficulty-link">Hard</a>
+        </div>
 
-        if ((gameState === "Lost" || gameState === "Won") && !gameOverHandled) {
-            displayBombs();
-            gameOverHandled = true;
-        }
-    </script>
+        <script>
+            const gameState = "@gameState";
 
-    <table id="gameBoard">
-        @for(y <- 0 until controller.field.size) {
-            <tr class="game-row">
-                @for(x <- 0 until controller.field.size) {
-                    <td class="cell covered" data-x="@y" data-y="@x"
-                        onclick="uncoverCell(@y, @x)"
-                        oncontextmenu="flagCell(@y, @x); return false;">
-                        <!-- Der tatsächliche Inhalt wird mit CSS verborgen -->
-                        <span class="cell-content">
-                            @{
-                                controller.field.cell(x, y) match {
-                                    case Symbols.Covered => Html("")
-                                    case Symbols.Flag => Html("🚩")
-                                    case Symbols.Bomb => Html("💣")
-                                    case Symbols.Empty => Html("&nbsp;")
-                                    case number => Html(number.toString)
+            let gameOverHandled = false;
+
+            if ((gameState === "Lost" || gameState === "Won") && !gameOverHandled) {
+                displayBombs();
+                gameOverHandled = true;
+            }
+        </script>
+
+        <div id="gameBoard">
+            @for(y <- 0 until controller.field.size) {
+                <div class="game-row">
+                    @for(x <- 0 until controller.field.size) {
+                        <div class="cell covered" data-x="@y" data-y="@x"
+                            onclick="uncoverCell(@y, @x)"
+                            oncontextmenu="flagCell(@y, @x); return false;">
+                            <span class="cell-content">
+                                @{
+                                    controller.field.cell(x, y) match {
+                                        case Symbols.Covered => Html("")
+                                        case Symbols.Flag => Html("🚩")
+                                        case Symbols.Bomb => Html("💣")
+                                        case Symbols.Empty => Html("&nbsp;")
+                                        case number => Html(number.toString)
+                                    }
                                 }
-                            }
-                        </span>
-                    </td>
-                }
-            </tr>
-        }
-    </table>
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
 
-    <div id="controls">
-        <a href='@routes.HomeController.undo()' class="button">Undo</a>
-        <a href='@routes.HomeController.restart()' class="button">Restart</a>
-        <a href='@routes.HomeController.saveGame()' class="button">Save Game</a>
-        <a href='@routes.HomeController.loadGamePage()' class="button">Load Game</a>
+        <div id="controls">
+            <a href='@routes.HomeController.undo()' class="button">Undo</a>
+            <a href='@routes.HomeController.restart()' class="button">Restart</a>
+            <a href='@routes.HomeController.saveGame()' class="button">Save Game</a>
+            <a href='@routes.HomeController.loadGamePage()' class="button">Load Game</a>
+        </div>
     </div>
 }

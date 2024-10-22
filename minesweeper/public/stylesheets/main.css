@@ -1,45 +1,54 @@
-.cell.covered:nth-child(even) {
-    background-color: #28a745; /* Hellgrün */
+/* Video-Hintergrund über den gesamten Bildschirm */
+#video-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1; /* Hinter allen anderen Inhalten */
 }
 
-.cell.covered:nth-child(odd) {
-    background-color: #1c7430; /* Dunkelgrün */
-}
-
-.game-row:nth-child(even) .cell.covered:nth-child(even) {
-    background-color: #1c7430; /* Dunkelgrün */
-}
-
-.game-row:nth-child(even) .cell.covered:nth-child(odd) {
-    background-color: #28a745; /* Hellgrün */
-}
-
-/* Zellen, die geöffnet wurden (grau) */
-.cell.revealed {
-    background-color: #ddd !important; /* Grau für aufgedeckte Zellen */
-}
-
-.cell.flag {
-    background-color: yellow !important; /* Gelb für markierte Zellen */
-}
-
-.cell.bomb {
-    background-color: red !important; /* Rot für Zellen mit Bomben */
-}
-
-
-/* Weitere Styling-Anpassungen */
-#gameBoard {
+#video-background video {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    min-width: 100%;
+    min-height: 100%;
     width: auto;
+    height: auto;
+    z-index: -1;
+    transform: translate(-50%, -50%);
+    object-fit: cover;
+    opacity: 0.9; /* Optional: Transparenz, um den Inhalt besser sichtbar zu machen */
+}
+
+/* Zentrale Inhaltsbereich */
+#content {
+    position: relative;
+    z-index: 1; /* Inhalte werden vor dem Video angezeigt */
+    display: flex;
+    flex-direction: column;
+    align-items: top;
+    justify-content: top;
+    padding: 20px;
+    min-height: 100vh; /* Stellt sicher, dass der Inhalt immer mindestens die Höhe des Bildschirms hat */
+}
+
+/* Layout für das Spielfeld */
+#gameBoard {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
     margin: 20px auto;
-    border-collapse: collapse;
 }
 
-#title {
-    text-align: center;
-    color: navy;
+/* Jede Spielreihe */
+.game-row {
+    display: flex;
 }
 
+/* Jede Zelle */
 .cell {
     width: 30px;
     height: 30px;
@@ -48,6 +57,47 @@
     vertical-align: middle;
     cursor: pointer;
     font-size: 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Zellen, die noch nicht geöffnet sind (Schachbrettmuster mit Dunkelgrün und Grün) */
+.cell.covered:nth-child(even) {
+    background-color: #052e5a; /* Hellgrün */
+}
+
+.cell.covered:nth-child(odd) {
+    background-color: #221c74; /* Dunkelgrün */
+}
+
+.game-row:nth-child(even) .cell.covered:nth-child(even) {
+    background-color: #221c74; /* Dunkelgrün */
+}
+
+.game-row:nth-child(even) .cell.covered:nth-child(odd) {
+    background-color: #052e5a; /* Hellgrün */
+}
+
+/* Zellen, die geöffnet wurden (grau) */
+.cell.revealed {
+    background-color: #ddd !important; /* Grau für geöffnete Zellen */
+}
+
+/* Zellen, die markiert wurden (Flagge, gelb) */
+.cell.flag {
+    background-color: yellow !important; /* Gelb für markierte Zellen */
+}
+
+/* Zellen, die eine Bombe enthalten (rot, optional für Spielende) */
+.cell.bomb {
+    background-color: red !important;
+}
+
+/* Weitere Styling-Anpassungen */
+#title {
+    text-align: center;
+    color: white;
 }
 
 .button {
