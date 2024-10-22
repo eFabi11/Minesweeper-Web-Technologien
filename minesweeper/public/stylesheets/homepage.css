@@ -207,31 +207,29 @@ p {
 }
 
 .start-game-button:hover {
-    background-color: #218838; /* Darker shade on hover */
-    transform: scale(1.25); /* Slightly enlarge on hover */
+    background-color: #218838;
+    transform: scale(1.25);
 }
 
-@media (max-width: 576px) {
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+    #title {
+        font-size: 4rem;
+    }
+
     .start-game-button {
-        font-size: 1.2rem; /* Smaller font size on small screens */
-        padding: 10px 20px; /* Adjust padding for small screens */
+        font-size: 1.8rem;
+        padding: 10px 20px;
     }
 }
 
-/* Media Queries */
-@media (max-width: 768px) {
+@media (max-width: 576px) {
     #title {
         font-size: 2.5rem;
     }
 
-    section img {
-        width: 100%;
-        height: auto;
-    }
-}
-
-@media (max-width: 576px) {
-    #title {
-        font-size: 2rem;
+    .start-game-button {
+        font-size: 1.5rem;
+        padding: 8px 16px;
     }
 }
