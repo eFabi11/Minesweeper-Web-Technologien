@@ -7,25 +7,36 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Load Game</title>
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/homepage.css")">
 </head>
 <body>
-    <header>
-        <h1>Minesweeper Load Game</h1>
-    </header>
-    <section>
-        <h2>Your Saved Games</h2>
-        <ul>
-            @for((gameId, fileName) <- games) {
-                <li>
-                    Game: @fileName
-                    <a href='@routes.HomeController.loadGame(gameId)'>Load</a>
-                    <a href='@routes.HomeController.deleteGame(gameId)'>Delete</a>
-                </li>
-            }
-        </ul>
-    </section>
-    <footer>
-        <h1><a href='@routes.HomeController.gameGui()'>Start New Game</a></h1>
-    </footer>
+<header class="text-center">
+    <h1 id="title">Minesweeper Load Game</h1>
+</header>
+
+<section class="container my-5 p-4 bg-white rounded shadow">
+    <h2 class="text-primary">Your Saved Games</h2>
+    <ul class="list-group">
+        @for((gameId, fileName) <- games) {
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            Game: @fileName
+            <div>
+                <a class="btn btn-info btn-sm mr-2" href='@routes.HomeController.loadGame(gameId)'>Load</a>
+                <a class="btn btn-danger btn-sm" href='@routes.HomeController.deleteGame(gameId)'>Delete</a>
+            </div>
+        </li>
+        }
+    </ul>
+</section>
+
+<footer class="text-center my-5">
+    <h1>
+        <a class="btn start-game-button" href='@routes.HomeController.gameGui()'>Start New Game</a>
+    </h1>
+</footer>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
 </body>
 </html>
