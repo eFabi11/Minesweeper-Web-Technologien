@@ -8,22 +8,27 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="@routes.Assets.versioned("javascripts/main.js")"></script>
 
-    <!-- Hauptcontainer, der das Spielfeld und die Video-Hintergründe enthält -->
+    <!-- Video-Hintergrund -->
     <div id="video-background">
         <video autoplay loop muted playsinline>
             <source src="../assets/Minesweeper.mp4" type="video/mp4">
-            Your browser does not support the video tag.
+            Ihr Browser unterstützt das Video-Tag nicht.
         </video>
     </div>
 
-    <!-- Zentrale Inhaltsbereich für das Spiel -->
-    <div id="content">
-        <h1 id="title">Minesweeper Game</h1>
+    <!-- Graue Leiste oben -->
+    <header>
+        <nav id="top-nav">
+            <a href="@routes.HomeController.gameHomepage()" id="logo">Minesweeper</a>
+        </nav>
+    </header>
 
+    <!-- Hauptinhalt für das Spiel -->
+    <div id="content">
         <div id="difficulty">
-            <a href='@routes.HomeController.setDifficulty("E")' class="btn btn-primary mx-2">Easy</a>
-            <a href='@routes.HomeController.setDifficulty("M")' class="btn btn-primary mx-2">Medium</a>
-            <a href='@routes.HomeController.setDifficulty("H")' class="btn btn-primary mx-2">Hard</a>
+            <a href='@routes.HomeController.setDifficulty("E")' class="btn-custom mx-2">Easy</a>
+            <a href='@routes.HomeController.setDifficulty("M")' class="btn-custom mx-2">Medium</a>
+            <a href='@routes.HomeController.setDifficulty("H")' class="btn-custom mx-2">Hard</a>
         </div>
 
         <script>
@@ -62,10 +67,10 @@
         </div>
 
         <div id="controls">
-            <a href='@routes.HomeController.undo()' class="btn btn-warning mx-2">Undo</a>
-            <a href='@routes.HomeController.restart()' class="btn btn-danger mx-2">Restart</a>
-            <a href='@routes.HomeController.saveGame()' class="btn btn-success mx-2">Save Game</a>
-            <a href='@routes.HomeController.loadGamePage()' class="btn btn-info mx-2">Load Game</a>
+            <a href='@routes.HomeController.undo()' class="btn-custom mx-2">Undo</a>
+            <a href='@routes.HomeController.restart()' class="btn-custom mx-2">Restart</a>
+            <a href='@routes.HomeController.saveGame()' class="btn-custom mx-2">Save Game</a>
+            <a href='@routes.HomeController.loadGamePage()' class="btn-custom mx-2">Load Game</a>
         </div>
     </div>
 }
