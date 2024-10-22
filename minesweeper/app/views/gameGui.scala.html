@@ -5,6 +5,7 @@
 
 @main("Minesweeper GUI") {
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <script src="@routes.Assets.versioned("javascripts/main.js")"></script>
 
     <!-- Hauptcontainer, der das Spielfeld und die Video-Hintergründe enthält -->
@@ -20,9 +21,9 @@
         <h1 id="title">Minesweeper Game</h1>
 
         <div id="difficulty">
-            <a href='@routes.HomeController.setDifficulty("E")' class="difficulty-link">Easy</a> |
-            <a href='@routes.HomeController.setDifficulty("M")' class="difficulty-link">Medium</a> |
-            <a href='@routes.HomeController.setDifficulty("H")' class="difficulty-link">Hard</a>
+            <a href='@routes.HomeController.setDifficulty("E")' class="btn btn-primary mx-2">Easy</a>
+            <a href='@routes.HomeController.setDifficulty("M")' class="btn btn-primary mx-2">Medium</a>
+            <a href='@routes.HomeController.setDifficulty("H")' class="btn btn-primary mx-2">Hard</a>
         </div>
 
         <script>
@@ -61,10 +62,10 @@
         </div>
 
         <div id="controls">
-            <a href='@routes.HomeController.undo()' class="button">Undo</a>
-            <a href='@routes.HomeController.restart()' class="button">Restart</a>
-            <a href='@routes.HomeController.saveGame()' class="button">Save Game</a>
-            <a href='@routes.HomeController.loadGamePage()' class="button">Load Game</a>
+            <a href='@routes.HomeController.undo()' class="btn btn-warning mx-2">Undo</a>
+            <a href='@routes.HomeController.restart()' class="btn btn-danger mx-2">Restart</a>
+            <a href='@routes.HomeController.saveGame()' class="btn btn-success mx-2">Save Game</a>
+            <a href='@routes.HomeController.loadGamePage()' class="btn btn-info mx-2">Load Game</a>
         </div>
     </div>
 }
