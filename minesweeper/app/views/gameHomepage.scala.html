@@ -1,40 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/homepage.css")">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title> Minesweeper Rules</title>
+    <title>Minesweeper Rules</title>
 </head>
 <body>
-    <header>
-        <h1 id="title">Minesweeper Rules</h1>
-    </header>
-    <section>
-        <h2>How to Play</h2>
-        <p>Minesweeper is a puzzle game where the player's goal is to clear a rectangular board containing hidden "mines" or bombs without detonating any of them. Players reveal cells on the grid by clicking on them. If a cell containing a mine is revealed, the player loses the game. If the revealed cell does not contain a mine, a number will be displayed in the cell, indicating how many adjacent cells contain mines.</p>
-        <p>The player uses this information to deduce which neighboring cells are safe to reveal and can mark suspected mine locations with flags. The game is won when all mine-free cells are revealed without detonating a mine.</p>
-    </section>
-    <section>
-        <h2>History</h2>
-        <p>Minesweeper was first created in the 1960s and has been included with many operating systems over the decades. It became highly popular when it was introduced in Windows 3.1 as part of the Microsoft Entertainment Pack. Since then, it has been a staple part of most versions of Windows.</p>
-    </section>
-    <Section>
-        <h2>Function</h2>
-        <p>Choose the Difficulty between easy, medium or hard</p>
-        <p>By clicking on "[ ]" you can open a Field</p>
-        <p>By clicking on "🚩" you can flag a Field</p>
-        <p>If you have Flagged all fields you win the game</p>
-        <p>If you open a Field with a Bomb you lose the game</p>
-    </Section>
-    <section>
-        <img src="../assets/EmptyField.png" alt="View of the new Game" width="300" height="400" title="Empty Field">
-        <img src="../assets/Numbers.png" alt="Mark of the Numbers" width="300" height="400" title="Numbers">
-        <img src="../assets/FlagBomb.png" alt="Flagged Bomb" width="300" height="400" title="Flag Bomb">
-    </section>
-</body>
-<h1>
-    <a href='@routes.HomeController.gameGui()'>Start Game</a>
+<header id="header-scroll">
+    <h1 id="title">Minesweeper</h1>
+</header>
 
+<nav id="navbar">
+    <ul>
+        <li><a href="#title" class="active">Home</a></li>
+        <li><a href="#how-to-play">How to Play</a></li>
+        <li><a href="#history">History</a></li>
+        <li><a href="#function">Function</a></li>
+        <li><a href="#visuals">Game Visuals</a></li>
+        <li><a href="@routes.HomeController.gameGui()">Start Game</a></li>
+    </ul>
+</nav>
+
+<section id="how-to-play" class="container mt-4">
+    <h2>How to Play</h2>
+    <p>Minesweeper is a puzzle game where the player's goal is to clear a rectangular board containing hidden "mines" or bombs without detonating any of them. Players reveal cells on the grid by clicking on them. If a cell containing a mine is revealed, the player loses the game. If the revealed cell does not contain a mine, a number will be displayed in the cell, indicating how many adjacent cells contain mines.</p>
+    <p>The player uses this information to deduce which neighboring cells are safe to reveal and can mark suspected mine locations with flags. The game is won when all mine-free cells are revealed without detonating a mine.</p>
+</section>
+
+<section id="history" class="container mt-4">
+    <h2>History</h2>
+    <p>Minesweeper was first created in the 1960s and has been included with many operating systems over the decades. It became highly popular when it was introduced in Windows 3.1 as part of the Microsoft Entertainment Pack. Since then, it has been a staple part of most versions of Windows.</p>
+</section>
+
+<section id="function" class="container mt-4">
+    <h2>Function</h2>
+    <ol class="list-group">
+        <li class="list-group-item">Choose the difficulty between easy, medium, or hard</li>
+        <li class="list-group-item">By left-clicking on a field you can open a field</li>
+        <li class="list-group-item">By right-clicking on a field you can flag a field</li>
+        <li class="list-group-item">If you have flagged all bombs, you win the game</li>
+        <li class="list-group-item">If you open a field with a bomb, you lose the game</li>
+    </ol>
+</section>
+
+<section id="visuals" class="container mt-4">
+    <h2>Game Visuals</h2>
+    <div class="row">
+        <div class="col-sm">
+            <img src="../assets/EmptyField.png" class="img-fluid" alt="View of the new Game" title="Empty Field">
+        </div>
+        <div class="col-sm">
+            <img src="../assets/Numbers.png" class="img-fluid" alt="Mark of the Numbers" title="Numbers">
+        </div>
+        <div class="col-sm">
+            <img src="../assets/FlagBomb.png" class="img-fluid" alt="Flagged Bomb" title="Flag Bomb">
+        </div>
+    </div>
+</section>
+
+<h1 id="start-game" class="my-4">
+    <a href='@routes.HomeController.gameGui()' class="btn start-game-button">Start Game</a>
 </h1>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
+<script src="@routes.Assets.versioned("javascripts/homepage.js")"></script>
+</body>
 </html>
