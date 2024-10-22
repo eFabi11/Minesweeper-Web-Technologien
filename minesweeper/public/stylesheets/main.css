@@ -1,22 +1,32 @@
-/* Zellen, die noch nicht geöffnet sind (grün) */
-.cell.covered {
-    background-color: #28a745; /* Grün für nicht geöffnete Zellen */
+.cell.covered:nth-child(even) {
+    background-color: #28a745; /* Hellgrün */
+}
+
+.cell.covered:nth-child(odd) {
+    background-color: #1c7430; /* Dunkelgrün */
+}
+
+.game-row:nth-child(even) .cell.covered:nth-child(even) {
+    background-color: #1c7430; /* Dunkelgrün */
+}
+
+.game-row:nth-child(even) .cell.covered:nth-child(odd) {
+    background-color: #28a745; /* Hellgrün */
 }
 
 /* Zellen, die geöffnet wurden (grau) */
 .cell.revealed {
-    background-color: #ddd !important; /* Grau für geöffnete Zellen */
+    background-color: #ddd !important; /* Grau für aufgedeckte Zellen */
 }
 
-/* Zellen, die markiert wurden (Flagge, gelb) */
 .cell.flag {
     background-color: yellow !important; /* Gelb für markierte Zellen */
 }
 
-/* Zellen, die eine Bombe enthalten (rot, optional für Spielende) */
 .cell.bomb {
-    background-color: red !important;
+    background-color: red !important; /* Rot für Zellen mit Bomben */
 }
+
 
 /* Weitere Styling-Anpassungen */
 #gameBoard {

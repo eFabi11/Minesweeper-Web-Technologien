@@ -6,8 +6,8 @@ function uncoverCell(x, y) {
         console.log(`Cell at (${x}, ${y}) uncovered`);
         const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
         if (cell) {
-            cell.classList.remove('covered');
-            cell.classList.add('revealed');
+            cell.classList.remove('covered', 'flag'); // Entferne 'covered' und 'flag'
+            cell.classList.add('revealed'); // Füge 'revealed' hinzu
         }
         document.documentElement.innerHTML = html;
     })
@@ -16,18 +16,24 @@ function uncoverCell(x, y) {
 
 // Funktion zum Flaggen einer Zelle
 function flagCell(x, y) {
-    fetch(`/flag/${x}/${y}`, { method: 'GET' })
-    .then(response => response.text())
-    .then(html => {
-        console.log(`Cell at (${x}, ${y}) flagged`);
-        const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
-        if (cell) {
-            cell.classList.remove('covered');
-            cell.classList.add('flag');
-        }
-        document.documentElement.innerHTML = html;
-    })
-    .catch(error => console.error('Error:', error));
+    const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
+    
+    // Stelle sicher, dass die Zelle nicht aufgedeckt ist, bevor sie geflaggt werden kann
+    if (cell && !cell.classList.contains('revealed')) {
+        fetch(`/flag/${x}/${y}`, { method: 'GET' })
+        .then(response => response.text())
+        .then(html => {
+            console.log(`Cell at (${x}, ${y}) flagged`);
+            if (cell) {
+                cell.classList.toggle('flag'); // Toggle 'flag' Klasse ein/aus
+                cell.classList.remove('covered'); // Entferne 'covered'
+            }
+            document.documentElement.innerHTML = html;
+        })
+        .catch(error => console.error('Error:', error));
+    } else {
+        console.log(`Cell at (${x}, ${y}) is already uncovered and cannot be flagged.`);
+    }
 }
 
 // Funktion zum Anzeigen der Bomben, wenn das Spiel vorbei ist
@@ -45,8 +51,8 @@ function displayBombs() {
                     if (bombMatrix[row][col] === "*") {
                         const cell = document.querySelector(`[data-x='${col}'][data-y='${row}']`);
                         if (cell) {
-                            cell.classList.remove('covered');
-                            cell.classList.add('bomb');
+                            cell.classList.remove('covered', 'flag'); // Entferne 'covered' und 'flag'
+                            cell.classList.add('bomb'); // Füge 'bomb' hinzu
                             cell.querySelector('.cell-content').innerHTML = "💣";
                         }
                     }
