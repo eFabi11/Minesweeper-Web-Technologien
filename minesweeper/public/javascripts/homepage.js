@@ -20,11 +20,11 @@ $(window).scroll(function () {
     // Aktiven Abschnitt bestimmen und hervorheben
     var sections = $('section'),
         nav = $('nav'),
-        nav_height = nav.outerHeight() + 120,
+        nav_height = nav.outerHeight() + 100,
         cur_pos = $(this).scrollTop();
 
     sections.each(function() {
-        var top = $(this).offset().top - nav_height - 200,
+        var top = $(this).offset().top - nav_height - 160,
             bottom = top + $(this).outerHeight();
 
         if (cur_pos >= top && cur_pos < bottom) {

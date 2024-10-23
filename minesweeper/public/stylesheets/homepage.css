@@ -141,6 +141,34 @@ ol.list-group > li::before {
     margin-right: 10px;
 }
 
+/* Styling for the figure caption (footnote) */
+figure {
+    display: inline-block;
+    text-align: center;
+    margin: 15px auto;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+figure:hover {
+    transform: scale(1.015);
+}
+
+/* Hover effect for images specifically */
+.visual-image {
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Styling for the figure caption (footnote) */
+figcaption {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 8px;
+    font-style: italic;
+    transition: text-shadow 0.3s ease-in-out;
+}
+
 /* Headings */
 h1 {
     font-size: 6.5rem;
