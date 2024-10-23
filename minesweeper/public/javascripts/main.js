@@ -62,6 +62,30 @@ function updateCell(cellData) {
     const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
     if (cell) {
         cell.className = 'cell ' + state; // Aktualisiere den Zustand der Zelle
-        cell.innerHTML = display; // Aktualisiere den Inhalt der Zelle (Nummer, Bombe, Leerzeichen)
+
+        let cellContent = cell.querySelector('.cell-content');
+        if (!cellContent) {
+            cellContent = document.createElement('span');
+            cellContent.className = 'cell-content';
+            cell.appendChild(cellContent);
+        }
+
+        cellContent.innerHTML = display;
     }
 }
+
+
+function displayBombs() {
+    fetch('/getBombs', { method: 'GET' })
+    .then(response => response.json())
+    .then(bombCells => {
+        bombCells.forEach(cellData => {
+            updateCell(cellData);
+        });
+    })
+    .catch(error => {
+        console.error('Error:', error);
+    });
+}
+
+
