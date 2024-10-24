@@ -1,39 +1,120 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/homepage.css")">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper Rules</title>
 </head>
 <body>
-    <header>
-        <h1>Minesweeper Rules</h1>
-    </header>
-    <section>
-        <h2>How to Play</h2>
-        <p>Minesweeper is a puzzle game where the player's goal is to clear a rectangular board containing hidden "mines" or bombs without detonating any of them. Players reveal cells on the grid by clicking on them. If a cell containing a mine is revealed, the player loses the game. If the revealed cell does not contain a mine, a number will be displayed in the cell, indicating how many adjacent cells contain mines.</p>
-        <p>The player uses this information to deduce which neighboring cells are safe to reveal and can mark suspected mine locations with flags. The game is won when all mine-free cells are revealed without detonating a mine.</p>
-    </section>
-    <section>
-        <h2>History</h2>
-        <p>Minesweeper was first created in the 1960s and has been included with many operating systems over the decades. It became highly popular when it was introduced in Windows 3.1 as part of the Microsoft Entertainment Pack. Since then, it has been a staple part of most versions of Windows.</p>
-    </section>
-    <Section>
-        <h2>Function</h2>
-        <p>Choose the Difficulty between easy, medium or hard</p>
-        <p>By clicking on "[ ]" you can open a Field</p>
-        <p>By clicking on "🚩" you can flag a Field</p>
-        <p>If you have Flagged all fields you win the game</p>
-        <p>If you open a Field with a Bomb you lose the game</p>
-    </Section>
-    <section>
-        <img src="../assets/EmptyField.png" alt="View of the new Game" width="300" height="400" title="Empty Field">
-        <img src="../assets/Numbers.png" alt="Mark of the Numbers" width="300" height="400" title="Numbers">
-        <img src="../assets/FlagBomb.png" alt="Flagged Bomb" width="300" height="400" title="Flag Bomb">
-    </section>
-</body>
-<h1>
-    <a href='@routes.HomeController.gameGui()'>Start Game</a>
+<header id="header-scroll">
+    <h1 id="title">Minesweeper</h1>
+</header>
 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top" id="navbar">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#title">Minesweeper</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#how-to-play">How to Play</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#history">History</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#function">Function</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#visuals">Game Visuals</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#feedback">Feedback</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#start-game">Start Game</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<section id="how-to-play" class="container mt-4">
+    <h2>How to Play</h2>
+    <p>Minesweeper is a puzzle game where the player's goal is to clear a rectangular board containing hidden "mines" or bombs without detonating any of them. Players reveal cells on the grid by clicking on them. If a cell containing a mine is revealed, the player loses the game. If the revealed cell does not contain a mine, a number will be displayed in the cell, indicating how many adjacent cells contain mines.</p>
+    <p>The player uses this information to deduce which neighboring cells are safe to reveal and can mark suspected mine locations with flags. The game is won when all mine-free cells are revealed without detonating a mine.</p>
+</section>
+
+<section id="history" class="container mt-4">
+    <h2>History</h2>
+    <p>Minesweeper was first created in the 1960s and has been included with many operating systems over the decades. It became highly popular when it was introduced in Windows 3.1 as part of the Microsoft Entertainment Pack. Since then, it has been a staple part of most versions of Windows.</p>
+</section>
+
+<section id="function" class="container mt-4">
+    <h2>Function</h2>
+    <ol class="list-group">
+        <li class="list-group-item">Choose the difficulty between easy, medium, or hard</li>
+        <li class="list-group-item">By left-clicking on a field you can open a field</li>
+        <li class="list-group-item">By right-clicking on a field you can flag a field</li>
+        <li class="list-group-item">If you have flagged all bombs, you win the game</li>
+        <li class="list-group-item">If you open a field with a bomb, you lose the game</li>
+    </ol>
+</section>
+
+<section id="visuals" class="container mt-4">
+    <h2>Game Visuals</h2>
+    <div class="row">
+        <div class="col-sm">
+            <figure>
+                <img src="../assets/EmptyField.png" class="img-fluid visual-image" alt="View of the new Game" title="Empty Field">
+                <figcaption>View of the new Game</figcaption>
+            </figure>
+        </div>
+        <div class="col-sm">
+            <figure>
+                <img src="../assets/Numbers.png" class="img-fluid visual-image" alt="Mark of the Numbers" title="Numbers">
+                <figcaption>Mark of the Numbers</figcaption>
+            </figure>
+        </div>
+        <div class="col-sm">
+            <figure>
+                <img src="../assets/FlagBomb.png" class="img-fluid visual-image" alt="Flagged Bomb" title="Flag Bomb">
+                <figcaption>Flagged Bomb</figcaption>
+            </figure>
+        </div>
+    </div>
+</section>
+
+
+<section id="feedback" class="container mt-4">
+    <h2>Feedback Form</h2>
+    <form>
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="name" required>
+        </div>
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="message" class="form-label">Message</label>
+            <textarea class="form-control" id="message" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Submit</button>
+    </form>
+</section>
+
+<h1 id="start-game" class="my-4">
+    <a href='@routes.HomeController.gameGui()' class="btn start-game-button">Start Game</a>
 </h1>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
+<script src="@routes.Assets.versioned("javascripts/homepage.js")"></script>
+</body>
 </html>

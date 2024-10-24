@@ -1,52 +1,76 @@
-@(controller: de.htwg.se.minesweeper.controller.controller.Controller)
+@(controller:de.htwg.se.minesweeper.controller.controller.Controller, gameState: String)
 
 @import helper._
 @import de.htwg.se.minesweeper.model.Symbols
 
 @main("Minesweeper GUI") {
-    <h1>Minesweeper Game</h1>
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="@routes.Assets.versioned("javascripts/main.js")"></script>
 
-    <p>
-        <strong>Difficulty:</strong>
-        <a href='@routes.HomeController.setDifficulty("E")'>Easy</a> |
-        <a href='@routes.HomeController.setDifficulty("M")'>Medium</a> |
-        <a href='@routes.HomeController.setDifficulty("H")'>Hard</a>
-    </p>
+    <!-- Video-Hintergrund -->
+    <div id="video-background">
+        <video autoplay loop muted playsinline>
+            <source src="../assets/Minesweeper.mp4" type="video/mp4">
+            Ihr Browser unterstützt das Video-Tag nicht.
+        </video>
+    </div>
 
-    <table border="1" cellpadding="5" cellspacing="0">
-        @for(y <- 0 until controller.field.size) {
-            <tr>
-                @for(x <- 0 until controller.field.size) {
-                    <td style="width:30px;height:30px;text-align:center;">
-                        @{
-                            val cellValue = controller.field.cell(x, y)
-                            cellValue match {
-                                case Symbols.Covered => Html(
-                                    s"""<a href='${routes.HomeController.uncoverField(y, x).url}'>[ ]</a>
-                                        <a href='${routes.HomeController.flagField(y, x).url}'>🚩</a>"""
-                                )
-                                case Symbols.Flag => Html("🚩")
-                                case Symbols.Empty => Html("&nbsp;")
-                                case Symbols.Bomb => Html("💣")
-                                case number => Html(number.toString)
-                            }
-                        }
-                    </td>
-                }
-            </tr>
-        }
-    </table>
+    <!-- Graue Leiste oben -->
+    <header>
+        <nav id="top-nav">
+            <a href="@routes.HomeController.gameHomepage()" id="logo">Minesweeper</a>
+        </nav>
+    </header>
 
-    <p>
-        <a href='@routes.HomeController.undo()'>Undo</a> |
-        <a href='@routes.HomeController.restart()'>Restart</a> |
-        <a href='@routes.HomeController.saveGame()'>Save Game</a> |
-        <a href='@routes.HomeController.loadGamePage()'>Load Game</a>
-    </p>
+    <!-- Hauptinhalt für das Spiel -->
+    <div id="content" class="@gameState">
+        <div id="difficulty">
+            <a href='@routes.HomeController.setDifficulty("E")' class="btn-custom mx-2">Easy</a>
+            <a href='@routes.HomeController.setDifficulty("M")' class="btn-custom mx-2">Medium</a>
+            <a href='@routes.HomeController.setDifficulty("H")' class="btn-custom mx-2">Hard</a>
+        </div>
 
-    @if(controller.game.gameState == de.htwg.se.minesweeper.model.Status.Won) {
-        <p><strong>Congratulations, you won!</strong></p>
-    } else if(controller.game.gameState == de.htwg.se.minesweeper.model.Status.Lost) {
-        <p><strong>Sorry, you lost!</strong></p>
-    }
+        <script>
+            const gameState = "@gameState";
+
+            let gameOverHandled = false;
+
+            if ((gameState === "Lost" || gameState === "Won") && !gameOverHandled) {
+                displayBombs();
+                gameOverHandled = true;
+            }
+        </script>
+
+        <div id="gameBoard">
+            @for(y <- 0 until controller.field.size) {
+                <div class="game-row">
+                    @for(x <- 0 until controller.field.size) {
+                        <div class="cell covered" data-x="@y" data-y="@x"
+                            onclick="uncoverCell(@y, @x)"
+                            oncontextmenu="flagCell(@y, @x); return false;">
+                            <span class="cell-content">
+                                @{
+                                    controller.field.cell(x, y) match {
+                                        case Symbols.Covered => Html("")
+                                        case Symbols.Flag => Html("🚩")
+                                        case Symbols.Bomb => Html("💣")
+                                        case Symbols.Empty => Html("&nbsp;")
+                                        case number => Html(number.toString)
+                                    }
+                                }
+                            </span>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div id="controls">
+            <a href='@routes.HomeController.undo()' class="btn-custom mx-2">Undo</a>
+            <a href='@routes.HomeController.restart()' class="btn-custom mx-2">Restart</a>
+            <a href='@routes.HomeController.saveGame()' class="btn-custom mx-2">Save Game</a>
+            <a href='@routes.HomeController.loadGamePage()' class="btn-custom mx-2">Load Game</a>
+        </div>
+    </div>
 }
