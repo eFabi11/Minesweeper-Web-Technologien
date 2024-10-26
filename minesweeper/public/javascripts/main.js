@@ -113,3 +113,25 @@ function updateCell(cellData) {
         cellContent.innerHTML = display;
     }
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const restartButton = document.getElementById('restart-button');
+    if (restartButton) {
+        restartButton.addEventListener('click', function(event) {
+            event.preventDefault();
+            const lostImage = document.querySelector('#you-lost .lost-image');
+            if (lostImage) {
+                // Füge die 'fade-out'-Klasse hinzu, um die Animation zu starten
+                lostImage.classList.add('fade-out');
+                // Warte, bis die Animation beendet ist, bevor umgeleitet wird
+                lostImage.addEventListener('animationend', function() {
+                    window.location.href = restartButton.getAttribute('href');
+                });
+            } else {
+                // Falls das Bild nicht vorhanden ist, sofort neu starten
+                window.location.href = restartButton.getAttribute('href');
+            }
+        });
+    }
+});
+
