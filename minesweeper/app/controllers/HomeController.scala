@@ -163,16 +163,24 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def listSavedGamesImpl(): Seq[(String, String)] = {
-      val savesDir = Paths.get("saves")
-      val saveFiles = Files.list(savesDir).filter(p => p.toString.endsWith(".xml")).collect(Collectors.toList()).asScala
+    val savesDir = Paths.get("saves")
+    if (!Files.exists(savesDir)) {
+        // Create the "saves" directory if it doesn't exist
+        Files.createDirectories(savesDir)
+    }
+    val saveFiles = Files.list(savesDir)
+      .filter(p => p.toString.endsWith(".xml"))
+      .collect(Collectors.toList())
+      .asScala
 
-      val games = saveFiles.map(file => {
-          val fileName = file.getFileName.toString
-          val gameId = fileName.substring(0, fileName.lastIndexOf("."))
-          (gameId, fileName)
-      })
-      games.toSeq
-  }
+    val games = saveFiles.map(file => {
+        val fileName = file.getFileName.toString
+        val gameId = fileName.substring(0, fileName.lastIndexOf("."))
+        (gameId, fileName)
+    })
+    games.toSeq
+}
+
 
   def deleteGame(gameId: String) = Action { implicit request: Request[AnyContent] =>
       val filePath = Paths.get(s"saves/$gameId.xml")
