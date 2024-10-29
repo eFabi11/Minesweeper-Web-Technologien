@@ -86,6 +86,18 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Redirect(routes.HomeController.gameGui()) // Redirect to GUI
   }
 
+  def getFieldMatrix = Action { implicit request: Request[AnyContent] =>
+    val matrix = gameController.field.matrix
+    val matrixJson = matrix.rows.map(row => row.map {
+      case Symbols.Bomb => "*"
+      case Symbols.Covered => "-"
+      case Symbols.Empty => " "
+      case Symbols.Flag => "f"
+      case number => number.toString
+    })
+    Ok(Json.toJson(matrixJson)) // Convert Field-matrix to JSON and send response
+  }
+
   def getBombMatrix = Action { implicit request: Request[AnyContent] =>
     val bombMatrix = gameController.field.bomben
     val bombMatrixJson = bombMatrix.rows.map(row => row.map {
