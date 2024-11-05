@@ -1,11 +1,11 @@
-$(document).ready(function () {
+$(document).ready(function() {
     // Trigger actions on window load
-    $(window).on('load', function () {
+    $(window).on('load', function() {
         $("#header-scroll").removeClass("small");
     });
 
     // Handle scroll events for header and navbar visibility, and section highlighting
-    $(window).on('scroll', function () {
+    $(window).on('scroll', function() {
         var scrollPosition = $(window).scrollTop();
         var navbar = $("#navbar");
 
@@ -24,7 +24,7 @@ $(document).ready(function () {
             navHeight = nav.outerHeight() + 100,
             currentPos = scrollPosition;
 
-        sections.each(function () {
+        sections.each(function() {
             var sectionTop = $(this).offset().top - navHeight - 160,
                 sectionBottom = sectionTop + $(this).outerHeight();
 
@@ -40,7 +40,7 @@ $(document).ready(function () {
     });
 
     // Smooth scrolling for navigation links
-    $('nav a').on('click', function (event) {
+    $('nav a').on('click', function(event) {
         event.preventDefault();
         var targetSection = $(this).attr('href');
         $('html, body').animate({

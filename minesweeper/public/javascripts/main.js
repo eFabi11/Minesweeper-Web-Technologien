@@ -1,61 +1,83 @@
-document.addEventListener('DOMContentLoaded', function() {
+$(document).ready(function() {
     // Adds event listeners to each cell
-    document.querySelectorAll('.cell').forEach(cell => {
-        cell.addEventListener('click', function() {
-            uncoverCell(this.dataset.x, this.dataset.y);
-        });
-        cell.addEventListener('contextmenu', function(e) {
-            e.preventDefault(); // Prevent the context menu
-            flagCell(this.dataset.x, this.dataset.y);
-        });
+    $('.cell').on('click', function() {
+        uncoverCell($(this).data('x'), $(this).data('y'));
+    });
+    $('.cell').on('contextmenu', function(e) {
+        e.preventDefault(); // Prevent the context menu
+        flagCell($(this).data('x'), $(this).data('y'));
     });
 
-    const gameState = document.querySelector('#content').classList.contains('Lost') || document.querySelector('#content').classList.contains('Won');
+    const gameState = $('#content').hasClass('Lost') || $('#content').hasClass('Won');
 
     if (gameState) {
         displayBombs(); // Display bombs if the game is won or lost
     }
 });
 
-// Function to uncover a cell
-function uncoverCell(x, y) {
-    fetch(`/uncover/${x}/${y}`, { method: 'GET' })
-    .then(response => response.text())
-    .then(xmlString => {
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-        const cellData = xmlDoc.querySelector('cell');
-        if (cellData) {
-            updateCell(cellData); // Dynamically update the cell
-        }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Error loading data. Please check the server response.');
-    });
-}
+$(document).ready(function() {
+    const restartButton = $('#restart-button');
+    if (restartButton.length > 0) {
+        restartButton.on('click', function(event) {
+            event.preventDefault();
+            const lostImage = $('#you-lost .lost-image');
+            if (lostImage.length > 0) {
+                // Füge die 'fade-out'-Klasse hinzu, um die Animation zu starten
+                lostImage.addClass('fade-out');
+                // Warte, bis die Animation beendet ist, bevor umgeleitet wird
+                lostImage.on('animationend', function() {
+                    window.location.href = restartButton.attr('href');
+                });
+            } else {
+                // Falls das Bild nicht vorhanden ist, sofort neu starten
+                window.location.href = restartButton.attr('href');
+            }
+        });
+    }
+});
 
 // Function to flag a cell
 function flagCell(x, y) {
-    const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
-    if (cell && !cell.classList.contains('revealed')) {
-        fetch(`/flag/${x}/${y}`, { method: 'GET' })
-        .then(response => response.text())
-        .then(xmlString => {
-            const parser = new DOMParser();
-            const xmlDoc = parser.parseFromString(xmlString, "application/xml");
-            const cellData = xmlDoc.querySelector('cell');
-            if (cellData) {
-                updateCell(cellData); // Dynamically update the cell
+    $.ajax({
+        type: 'POST',
+        url: '/game/flag',
+        data: { x: x, y: y },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                updateCell(data);
+            } else {
+                console.error('Error flagging cell:', data);
+                alert('Error flagging cell. Please check the server response.');
             }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-            alert('Error loading data. Please check the server response.');
-        });
-    } else {
-        console.log(`Cell at (${x}, ${y}) is already uncovered and cannot be flagged.`);
-    }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error flagging cell:', error);
+            alert('Error flagging cell. Please check the server response.');
+        }
+    });
+}
+
+// Function to uncover a cell
+function uncoverCell(x, y) {
+    $.ajax({
+        type: 'POST',
+        url: '/game/uncover',
+        data: { x: x, y: y },
+        dataType: 'json',
+        success: function(data) {
+            if (data.success) {
+                updateCell(data);
+            } else {
+                console.error('Error uncovering cell:', data);
+                alert('Error uncovering cell. Please check the server response.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error uncovering cell:', error);
+            alert('Error uncovering cell. Please check the server response.');
+        }
+    });
 }
 
 // Function to display bombs when the game is over
@@ -93,44 +115,27 @@ function displayBombs() {
 }
 
 // Helper function to update a cell in the DOM
-function updateCell(cellData) {
-    const x = cellData.getAttribute('x');
-    const y = cellData.getAttribute('y');
-    const state = cellData.getAttribute('state');
-    const display = cellData.textContent;
+function updateCell(x, y) {
+    $.ajax({ function(data) {
+            const cellData = $(data).find('cell');
+            const state = cellData.attr('state');
+            const display = cellData.text();
 
-    const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
-    if (cell) {
-        cell.className = 'cell ' + state; // Update the cell's state
+            const cell = $(`[data-x='${x}'][data-y='${y}']`);
+            if (cell.length > 0) {
+                cell.addClass(state); // Update the cell's state
 
-        let cellContent = cell.querySelector('.cell-content');
-        if (!cellContent) {
-            cellContent = document.createElement('span');
-            cellContent.className = 'cell-content';
-            cell.appendChild(cellContent);
-        }
-
-        cellContent.innerHTML = display;
-    }
-}
-
-document.addEventListener('DOMContentLoaded', function() {
-    const restartButton = document.getElementById('restart-button');
-    if (restartButton) {
-        restartButton.addEventListener('click', function(event) {
-            event.preventDefault();
-            const lostImage = document.querySelector('#you-lost .lost-image');
-            if (lostImage) {
-                // Füge die 'fade-out'-Klasse hinzu, um die Animation zu starten
-                lostImage.classList.add('fade-out');
-                // Warte, bis die Animation beendet ist, bevor umgeleitet wird
-                lostImage.addEventListener('animationend', function() {
-                    window.location.href = restartButton.getAttribute('href');
-                });
-            } else {
-                // Falls das Bild nicht vorhanden ist, sofort neu starten
-                window.location.href = restartButton.getAttribute('href');
+                let cellContent = cell.find('.cell-content');
+                if (cellContent.length === 0) {
+                    cellContent = $('<span class="cell-content"></span>');
+                    cell.append(cellContent);
+                }
+                cellContent.html(display);
             }
-        });
-    }
-});
+        },
+        error: function(xhr, status, error) {
+            console.error('Error updating cell:', error);
+            alert('Error updating cell. Please check the server response.');
+        }
+    });
+}

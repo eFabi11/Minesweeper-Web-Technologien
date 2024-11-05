@@ -66,14 +66,18 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Redirect(routes.HomeController.gameGui()) 
   }
 
-  def uncoverField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
+  def uncoverField = Action { implicit request =>
+    val x = request.body.asFormUrlEncoded.get("x").head.toInt
+    val y = request.body.asFormUrlEncoded.get("y").head.toInt
     gameController.uncoverField(x, y)
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true))
   }
 
-  def flagField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
+  def flagField = Action { implicit request =>
+    val x = request.body.asFormUrlEncoded.get("x").head.toInt
+    val y = request.body.asFormUrlEncoded.get("y").head.toInt
     gameController.flagField(x, y)
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true))
   }
 
   def undo() = Action { implicit request: Request[AnyContent] =>
