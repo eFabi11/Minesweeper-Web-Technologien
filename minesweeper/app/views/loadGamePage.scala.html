@@ -10,7 +10,9 @@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
     <link rel="shortcut icon" type="image/png" href="../assets/favicon-32x32.png">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/homepage.css")">
+    <script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="@routes.Assets.versioned("javascripts/homepage.js")"></script>
 </head>
 <body>
 <header class="text-center">
@@ -24,9 +26,22 @@
         <li class="list-group-item d-flex justify-content-between align-items-center">
             Game: @fileName
             <div>
-                <a class="btn btn-info btn-sm mr-2" href='@routes.HomeController.loadGame(gameId)'>Load</a>
-                <a class="btn btn-danger btn-sm" href='@routes.HomeController.deleteGame(gameId)'>Delete</a>
+                <button class="btn btn-info btn-sm mr-2" id='loadGame' data-game-id="@gameId">Load</button>
+                <button class="btn btn-danger btn-sm" id='deleteGame' data-game-id="@gameId">Delete</button>
             </div>
+            <script>
+                $('.list-group-item').on('click', '#loadGame', function() {
+                    var gameId = $(this).data('game-id');
+                    console.log(gameId);
+                    loadGame(gameId);
+                });
+
+                $('.list-group-item').on('click', '#deleteGame', function() {
+                    var gameId = $(this).data('game-id');
+                    console.log(gameId);
+                    deleteGame(gameId);
+                });
+            </script>
         </li>
         }
     </ul>
@@ -37,8 +52,5 @@
         <a class="btn start-game-button" href='@routes.HomeController.gameGui()'>Start New Game</a>
     </h1>
 </footer>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
 </body>
 </html>

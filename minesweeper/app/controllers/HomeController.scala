@@ -7,6 +7,7 @@ import play.twirl.api.Html
 import scala.xml.XML
 import play.api.libs.json._
 import java.io.File
+import scala.concurrent._
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
@@ -31,29 +32,22 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   val fileIOXML = new FileIOXML()
 
-  def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
-  }
-
   def gameHomepage() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.gameHomepage())
   }
 
-  // TUI Game Board
-  def gameTui() = Action { implicit request: Request[AnyContent] =>
-    val gameBoardText = gameController.toString
-    val htmlGameBoardText = s"<pre>${gameBoardText.replace("\n", "<br>")}</pre>"
-    val html: Html = Html(htmlGameBoardText)
-    Ok(views.html.main(title = "Minesweeper TUI")(content = html))
-  }
-
-  // GUI Game Board
   def gameGui() = Action { implicit request: Request[AnyContent] =>
     val gameState = gameController.game.gameState.toString
     Ok(views.html.gameGui(gameController, gameState))
   }
 
-  def setDifficulty(diff: String) = Action { implicit request: Request[AnyContent] =>
+  def loadGamePage() = Action { implicit request: Request[AnyContent] =>
+    val games = listSavedGamesImpl()
+    Ok(views.html.loadGamePage(games))
+  }
+
+  def setDifficulty = Action { implicit request: Request[AnyContent] =>
+    val diff = request.body.asFormUrlEncoded.get("level").head.toString
     val selectedStrategy: DifficultyStrategy = diff match {
       case "E" => new EasyDifficulty
       case "M" => new MediumDifficulty
@@ -63,7 +57,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         new EasyDifficulty
     }
     gameController.setDifficulty(selectedStrategy)
-    Redirect(routes.HomeController.gameGui()) 
+    Ok(Json.obj("success" -> true))
   }
 
   def uncoverField = Action { implicit request =>
@@ -82,12 +76,12 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def undo() = Action { implicit request: Request[AnyContent] =>
     gameController.undo()
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true))
   }
 
   def restart() = Action { implicit request: Request[AnyContent] =>
     gameController.restart()
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true))
   }
 
   def getFieldMatrix = Action { implicit request: Request[AnyContent] =>
@@ -110,20 +104,30 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       case Symbols.Empty => " "
       case number => number.toString
     })
-    Ok(Json.toJson(bombMatrixJson)) // Convert bombMatrix to JSON and send response
+    Ok(Json.toJson(bombMatrixJson))
   }
 
   def saveGame() = Action { implicit request: Request[AnyContent] =>
     fileIOXML.save(gameController.field)
     moveAndRename()
-    Redirect(routes.HomeController.gameGui())
+    Ok(Json.obj("success" -> true))
   }
 
-  def loadGame(name: String) = Action { implicit request: Request[AnyContent] =>
-    gameController.setField(loadXML(name))
+  def loadGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>
+    gameController.setField(loadXML(gameId))
     gameController.setFirstMove(false)
     gameController.game.gameState = GameStatus.Playing
-    Redirect(routes.HomeController.gameGui())
+    Future.successful(Ok(Json.obj("redirect" -> routes.HomeController.gameGui().url.toString)))
+  }
+
+  def deleteGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>
+    val filePath = Paths.get(s"saves/$gameId.xml")
+    if (Files.exists(filePath)) {
+      Files.delete(filePath)
+      Future.successful(Ok(Json.obj("success" -> true)))
+    } else {
+      Future.successful(NotFound(Json.obj("error" -> "Game file not found.")))
+    }
   }
 
   def loadXML(name: String): Field = {
@@ -173,11 +177,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
   }
 
-  def loadGamePage() = Action { implicit request: Request[AnyContent] =>
-    val games = listSavedGamesImpl()
-    Ok(views.html.loadGamePage(games))
-  }
-
   def listSavedGamesImpl(): Seq[(String, String)] = {
     val savesDir = Paths.get("saves")
     if (!Files.exists(savesDir)) {
@@ -195,16 +194,5 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         (gameId, fileName)
     })
     games.toSeq
-}
-
-
-  def deleteGame(gameId: String) = Action { implicit request: Request[AnyContent] =>
-      val filePath = Paths.get(s"saves/$gameId.xml")
-      if (Files.exists(filePath)) {
-          Files.delete(filePath)
-          Redirect(routes.HomeController.loadGamePage()).flashing("success" -> "Game deleted successfully.")
-      } else {
-          Redirect(routes.HomeController.loadGamePage()).flashing("error" -> "Game file not found.")
-      }
   }
 }

@@ -6,17 +6,22 @@
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.gameHomepage()
 GET     /game                       controllers.HomeController.gameGui()
-GET     /tui                        controllers.HomeController.gameTui()
-GET     /diff/:diff                 controllers.HomeController.setDifficulty(diff: String)
+GET     /game/load                  controllers.HomeController.loadGamePage()
+
+POST    /game/setDiff               controllers.HomeController.setDifficulty()
+
 POST    /game/uncover               controllers.HomeController.uncoverField()
 POST    /game/flag                  controllers.HomeController.flagField()
-GET     /undo                       controllers.HomeController.undo()
-GET     /restart                    controllers.HomeController.restart()
-GET     /saveGame                   controllers.HomeController.saveGame()
-GET     /loadGamePage               controllers.HomeController.loadGamePage()
+
+POST    /game/undo                  controllers.HomeController.undo()
+POST    /game/restart               controllers.HomeController.restart()
+POST    /game/save                  controllers.HomeController.saveGame()
+
+POST    /game/getBombMatrix         controllers.HomeController.getBombMatrix()
+
 GET     /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
-GET     /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
-GET     /getBombMatrix              controllers.HomeController.getBombMatrix()
+POST    /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
+
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)

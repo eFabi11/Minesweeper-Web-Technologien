@@ -48,3 +48,34 @@ $(document).ready(function() {
         }, 500);
     });
 });
+
+function loadGame(gameId) {
+    $.ajax({
+        url: 'http://localhost:9000/loadGame/' + gameId,
+        type: 'GET',
+        success: function(response) {
+            window.location.href = response.redirect;
+        },
+        error: function(xhr, status, error) {
+            alert('Error loading game: ' + error);
+        }
+    });
+}
+
+function deleteGame(gameId) {
+    $.ajax({
+        url: 'http://localhost:9000/deleteGame/' + gameId,
+        type: 'POST',
+        success: function(response) {
+            if (response.success) {
+                alert('Game deleted successfully.');
+                location.reload();
+            } else {
+                alert('Error deleting game.');
+            }
+        },
+        error: function(xhr, status, error) {
+            alert('Error deleting game: ' + error);
+        }
+    });
+}

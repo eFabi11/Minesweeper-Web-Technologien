@@ -1,17 +1,19 @@
+//-------------------- Event-listeners --------------------
+
 $(document).ready(function() {
     // Adds event listeners to each cell
     $('.cell').on('click', function() {
         uncoverCell($(this).data('x'), $(this).data('y'));
     });
     $('.cell').on('contextmenu', function(e) {
-        e.preventDefault(); // Prevent the context menu
+        e.preventDefault();
         flagCell($(this).data('x'), $(this).data('y'));
     });
 
     const gameState = $('#content').hasClass('Lost') || $('#content').hasClass('Won');
 
     if (gameState) {
-        displayBombs(); // Display bombs if the game is won or lost
+        displayBombs();
     }
 });
 
@@ -22,27 +24,91 @@ $(document).ready(function() {
             event.preventDefault();
             const lostImage = $('#you-lost .lost-image');
             if (lostImage.length > 0) {
-                // Füge die 'fade-out'-Klasse hinzu, um die Animation zu starten
                 lostImage.addClass('fade-out');
-                // Warte, bis die Animation beendet ist, bevor umgeleitet wird
                 lostImage.on('animationend', function() {
                     window.location.href = restartButton.attr('href');
                 });
             } else {
-                // Falls das Bild nicht vorhanden ist, sofort neu starten
                 window.location.href = restartButton.attr('href');
             }
         });
     }
 });
 
+$(document).ready(function() {
+    $('#loadGamePage').on('click', function(event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'GET',
+            url: 'http://localhost:9000/game/load',
+            dataType: 'json',
+            success: function(data) {
+                $('#content').html(data.games);
+            },
+            error: function(xhr, status, error) {
+                console.error('Error loading game:', error);
+                alert('Error loading game. Please check the server response.');
+            }
+        });
+    });
+});
+
+$('#easy').on('click', function() {
+    setDifficulty('E');
+});
+
+$('#medium').on('click', function() {
+    setDifficulty('M');
+});
+
+$('#hard').on('click', function() {
+    setDifficulty('H');
+});
+
+$('#undo').on('click', function(event) {
+    event.preventDefault();
+    undo();
+});
+
+$('#restart').on('click', function(event) {
+    event.preventDefault();
+    restart();
+});
+
+$('#saveGame').on('click', function(event) {
+    event.preventDefault();
+    saveGame();
+});
+
+//-------------------- Functions for the logic of event listeners --------------------
+
+// Function to set the difficulty level
+function setDifficulty(level) {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:9000/game/setDiff',
+        data: { level: level },
+        success: function(data) {
+            if (data.success) {
+                console.log('Difficulty level set to ' + level);
+            } else {
+                console.error('Error setting difficulty level:', data);
+                alert('Error setting difficulty level. Please check the server response.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error setting difficulty level:', error);
+            alert('Error setting difficulty level. Please check the server response.');
+        }
+    });
+}
+
 // Function to flag a cell
 function flagCell(x, y) {
     $.ajax({
         type: 'POST',
-        url: '/game/flag',
+        url: 'http://localhost:9000/game/flag',
         data: { x: x, y: y },
-        dataType: 'json',
         success: function(data) {
             if (data.success) {
                 updateCell(data);
@@ -62,9 +128,8 @@ function flagCell(x, y) {
 function uncoverCell(x, y) {
     $.ajax({
         type: 'POST',
-        url: '/game/uncover',
+        url: 'http://localhost:9000/game/uncover',
         data: { x: x, y: y },
-        dataType: 'json',
         success: function(data) {
             if (data.success) {
                 updateCell(data);
@@ -82,36 +147,35 @@ function uncoverCell(x, y) {
 
 // Function to display bombs when the game is over
 function displayBombs() {
-    fetch('/getBombMatrix', { method: 'GET' })
-    .then(response => response.json())
-    .then(bombMatrix => {
-        bombMatrix.forEach((row, y) => {
-            row.forEach((cellContent, x) => {
-                const cell = document.querySelector(`[data-x='${x}'][data-y='${y}']`);
-                if (cell) {
-                    let cellContentSpan = cell.querySelector('.cell-content');
-                    if (!cellContentSpan) {
-                        cellContentSpan = document.createElement('span');
-                        cellContentSpan.className = 'cell-content';
-                        cell.appendChild(cellContentSpan);
-                    }
-
-                    // Update the cell's content based on the bomb matrix
-                    cellContentSpan.innerHTML = cellContent === "*" ? "💣" : cellContent;
-                    cell.classList.remove('covered');
-                    if (cellContent === "*") {
-                        cell.classList.add('bomb'); // Apply bomb styling
-                    } else {
-                        cell.classList.add('revealed'); // Apply revealed styling
-                    }
-                }
-            });
+  $.ajax({
+    type: 'POST',
+    url: 'http://localhost:9000/game/getBombMatrix',
+    success: function(bombMatrix) {
+      $.each(bombMatrix, function(y, row) {
+        $.each(row, function(x, cellContent) {
+          var cell = $('[data-x="' + x + '"][data-y="' + y + '"]');
+          if (cell.length) {
+            var cellContentSpan = cell.find('.cell-content');
+            if (!cellContentSpan.length) {
+              cellContentSpan = $('<span class="cell-content"></span>');
+              cell.append(cellContentSpan);
+            }
+            cellContentSpan.html(cellContent === "*" ? "💣" : cellContent);
+            cell.removeClass('covered');
+            if (cellContent === "*") {
+              cell.addClass('bomb'); // Apply bomb styling
+            } else {
+              cell.addClass('revealed'); // Apply revealed styling
+            }
+          }
         });
-    })
-    .catch(error => {
-        console.error('Error fetching bomb matrix:', error);
-        alert('Error fetching bomb matrix. Please check the server.');
-    });
+      });
+    },
+    error: function(xhr, status, error) {
+      console.error('Error fetching bomb matrix:', error);
+      alert('Error fetching bomb matrix. Please check the server.');
+    }
+  });
 }
 
 // Helper function to update a cell in the DOM
@@ -136,6 +200,66 @@ function updateCell(x, y) {
         error: function(xhr, status, error) {
             console.error('Error updating cell:', error);
             alert('Error updating cell. Please check the server response.');
+        }
+    });
+}
+
+// Function to handle the undo event
+function undo() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:9000/game/undo',
+        success: function(data) {
+            if (data.success) {
+                console.log('Undo successful');
+            } else {
+                console.error('Error undoing:', data);
+                alert('Error undoing. Please check the server response.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error undoing:', error);
+            alert('Error undoing. Please check the server response.');
+        }
+    });
+}
+
+// Function to handle the restart event
+function restart() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:9000/game/restart',
+        success: function(data) {
+            if (data.success) {
+                console.log('Restart successful');
+            } else {
+                console.error('Error restarting:', data);
+                alert('Error restarting. Please check the server response.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error restarting:', error);
+            alert('Error restarting. Please check the server response.');
+        }
+    });
+}
+
+// Function to handle the save game event
+function saveGame() {
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:9000/game/save',
+        success: function(data) {
+            if (data.success) {
+                console.log('Save game successful');
+            } else {
+                console.error('Error saving game:', data);
+                alert('Error saving game. Please check the server response.');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('Error saving game:', error);
+            alert('Error saving game. Please check the server response.');
         }
     });
 }

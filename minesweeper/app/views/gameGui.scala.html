@@ -28,9 +28,9 @@
     <!-- Hauptinhalt für das Spiel -->
     <div id="content" class="@gameState">
         <div id="difficulty">
-            <a href='@routes.HomeController.setDifficulty("E")' class="btn-custom mx-2">Easy</a>
-            <a href='@routes.HomeController.setDifficulty("M")' class="btn-custom mx-2">Medium</a>
-            <a href='@routes.HomeController.setDifficulty("H")' class="btn-custom mx-2">Hard</a>
+            <button id="easy" class="btn-custom mx-2">Easy</button>
+            <button id="medium" class="btn-custom mx-2">Medium</button>
+            <button id="hard" class="btn-custom mx-2">Hard</button>
         </div>
 
         <script>
@@ -76,11 +76,10 @@
         </div>
 
         <div id="controls">
-            <a href='@routes.HomeController.undo()' class="btn-custom mx-2">Undo</a>
-            <!-- "Restart"-Button angepasst -->
-            <a href='@routes.HomeController.restart()' class="btn-custom mx-2" id="restart-button">Restart</a>
-            <a href='@routes.HomeController.saveGame()' class="btn-custom mx-2">Save Game</a>
-            <a href='@routes.HomeController.loadGamePage()' class="btn-custom mx-2">Load Game</a>
+            <button id='undo' class="btn-custom mx-2">Undo</button>
+            <button id='restart' class="btn-custom mx-2">Restart</button>
+            <button id='saveGame' class="btn-custom mx-2">Save Game</button>
+            <button id='loadGamePage' class="btn-custom mx-2">Load Game</button>
         </div>
     </div>
 
