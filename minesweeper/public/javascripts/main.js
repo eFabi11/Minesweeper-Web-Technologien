@@ -58,7 +58,7 @@ function buildGameBoard() {
       if (gameState == "Lost" || gameState == "Won") {
         displayBombs();
         if (gameState == "Lost") {
-          $('#content').append('<div id="you-lost"><img src="../assets/you_lost.png" alt="You Lost" class="lost-image" /></div>');
+          gameBoardHtml += '<div id="you-lost"><img src="../assets/you_lost.png" alt="You Lost" class="lost-image" /></div>';
         }
       }
       // Update the game board
