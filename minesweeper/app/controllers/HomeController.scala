@@ -41,8 +41,6 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     Ok(views.html.gameGui())
   }
 
-  // minesweeper/app/controllers/HomeController.scala
-
   def getGameBoard = Action { implicit request: Request[AnyContent] =>
     val rows = gameController.field.size
     val cols = gameController.field.size
@@ -57,17 +55,13 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         }
       }
     }
-
     val gameBoardJson = Json.obj(
       "rows" -> rows,
       "cols" -> cols,
       "cells" -> cells
     )
-
     Ok(gameBoardJson)
   }
-
-  case class CellState(state: String, image: Option[String] = None, value: Option[String] = None)
 
   def loadGamePage() = Action { implicit request: Request[AnyContent] =>
     val games = listSavedGamesImpl()
