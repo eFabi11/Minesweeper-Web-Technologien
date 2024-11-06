@@ -8,6 +8,8 @@ GET     /                           controllers.HomeController.gameHomepage()
 GET     /game                       controllers.HomeController.gameGui()
 GET     /game/load                  controllers.HomeController.loadGamePage()
 
+POST    /game/getGameBoard          controllers.HomeController.getGameBoard()
+
 POST    /game/setDiff               controllers.HomeController.setDifficulty()
 
 POST    /game/uncover               controllers.HomeController.uncoverField()

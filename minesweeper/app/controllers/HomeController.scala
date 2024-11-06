@@ -37,9 +37,37 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def gameGui() = Action { implicit request: Request[AnyContent] =>
-    val gameState = gameController.game.gameState.toString
-    Ok(views.html.gameGui(gameController, gameState))
+    gameController.setDifficulty(new EasyDifficulty)
+    Ok(views.html.gameGui())
   }
+
+  // minesweeper/app/controllers/HomeController.scala
+
+  def getGameBoard = Action { implicit request: Request[AnyContent] =>
+    val rows = gameController.field.size
+    val cols = gameController.field.size
+    val cells = (0 until rows).map { row =>
+      (0 until cols).map { col =>
+        gameController.field.cell(col, row) match {
+          case Symbols.Bomb => Json.obj("state" -> "bomb", "image" -> routes.Assets.versioned("assets/Mine.png").url)
+          case Symbols.Covered => Json.obj("state" -> "covered")
+          case Symbols.Empty => Json.obj("state" -> "empty")
+          case Symbols.Flag => Json.obj("state" -> "flag")
+          case number => Json.obj("state" -> "number", "value" -> number.toString)
+        }
+      }
+    }
+
+    val gameBoardJson = Json.obj(
+      "rows" -> rows,
+      "cols" -> cols,
+      "cells" -> cells
+    )
+
+    Ok(gameBoardJson)
+  }
+
+  case class CellState(state: String, image: Option[String] = None, value: Option[String] = None)
 
   def loadGamePage() = Action { implicit request: Request[AnyContent] =>
     val games = listSavedGamesImpl()
@@ -47,6 +75,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
   }
 
   def setDifficulty = Action { implicit request: Request[AnyContent] =>
+    gameController.restart()
     val diff = request.body.asFormUrlEncoded.get("level").head.toString
     val selectedStrategy: DifficultyStrategy = diff match {
       case "E" => new EasyDifficulty
@@ -57,31 +86,31 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         new EasyDifficulty
     }
     gameController.setDifficulty(selectedStrategy)
-    Ok(Json.obj("success" -> true))
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def uncoverField = Action { implicit request =>
     val x = request.body.asFormUrlEncoded.get("x").head.toInt
     val y = request.body.asFormUrlEncoded.get("y").head.toInt
     gameController.uncoverField(x, y)
-    Ok(Json.obj("success" -> true))
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def flagField = Action { implicit request =>
     val x = request.body.asFormUrlEncoded.get("x").head.toInt
     val y = request.body.asFormUrlEncoded.get("y").head.toInt
     gameController.flagField(x, y)
-    Ok(Json.obj("success" -> true))
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def undo() = Action { implicit request: Request[AnyContent] =>
     gameController.undo()
-    Ok(Json.obj("success" -> true))
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def restart() = Action { implicit request: Request[AnyContent] =>
     gameController.restart()
-    Ok(Json.obj("success" -> true))
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def getBombMatrix = Action { implicit request: Request[AnyContent] =>

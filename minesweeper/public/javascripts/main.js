@@ -1,40 +1,73 @@
 //-------------------- Event-listeners --------------------
 
-$(document).ready(function() {
-    // Adds event listeners to each cell
-    $('.cell').on('click', function() {
+var gameBoard = $("#gameBoard");
+var gameState = ""
+
+// Function to build the game board
+function buildGameBoard() {
+  $.ajax({
+    type: "POST",
+    url: "http://localhost:9000/game/getGameBoard",
+    dataType: "json",
+    success: function(data) {
+      // Clear the game board
+      gameBoard.html('');
+
+      // Build the game board dynamically
+      var rows = data.rows;
+      var cols = data.cols;
+      var cells = data.cells;
+
+      var gameBoardHtml = '<div id="gameBoard">';
+      for (var i = 0; i < rows; i++) {
+        gameBoardHtml += '<div class="game-row">';
+        for (var j = 0; j < cols; j++) {
+          var cell = cells[i][j];
+          gameBoardHtml += '<div class="cell ' + cell.state + '" data-x="' + i + '" data-y="' + j + '"';
+          if (cell.state === 'covered') {
+            gameBoardHtml += ' onclick="uncoverCell(' + i + ', ' + j + ')" oncontextmenu="flagCell(' + i + ', ' + j + '); return false;">';
+          }
+          gameBoardHtml += '<span class="cell-content">';
+          if (cell.state === 'bomb') {
+            gameBoardHtml += '<img src="/assets/Mine.png" alt="Mine" class="mine-icon">';
+          } else if (cell.state === 'flag') {
+            gameBoardHtml += '&#x1F6A9;';
+          } else if (cell.state === 'empty') {
+            gameBoardHtml += '&nbsp;';
+          } else if (cell.state === 'number') {
+            gameBoardHtml += cell.value;
+          }
+          gameBoardHtml += '</span></div>';
+        }
+        gameBoardHtml += '</div>';
+      }
+      gameBoardHtml += '</div>';
+
+      // Add event listeners to each cell
+      $('.cell').on('click', function() {
         uncoverCell($(this).data('x'), $(this).data('y'));
-    });
-    $('.cell').on('contextmenu', function(e) {
+      });
+      $('.cell').on('contextmenu', function(e) {
         e.preventDefault();
         flagCell($(this).data('x'), $(this).data('y'));
-    });
+      });
 
-    const gameState = $('#content').hasClass('Lost') || $('#content').hasClass('Won');
+      console.log(gameState)
 
-    if (gameState) {
+      // Check the game state
+      if (gameState == "Lost" || gameState == "Won") {
         displayBombs();
+        if (gameState == "Lost") {
+          $('#content').append('<div id="you-lost"><img src="../assets/you_lost.png" alt="You Lost" class="lost-image" /></div>');
+        }
+      }
+      // Update the game board
+      gameBoard.html(gameBoardHtml);
     }
-});
+  });
+}
 
-$(document).ready(function() {
-    const restartButton = $('#restart-button');
-    if (restartButton.length > 0) {
-        restartButton.on('click', function(event) {
-            event.preventDefault();
-            const lostImage = $('#you-lost .lost-image');
-            if (lostImage.length > 0) {
-                lostImage.addClass('fade-out');
-                lostImage.on('animationend', function() {
-                    window.location.href = restartButton.attr('href');
-                });
-            } else {
-                window.location.href = restartButton.attr('href');
-            }
-        });
-    }
-});
-
+// Load game button
 $(document).ready(function() {
     $('#loadGamePage').on('click', function(event) {
         event.preventDefault();
@@ -89,8 +122,10 @@ function setDifficulty(level) {
         url: 'http://localhost:9000/game/setDiff',
         data: { level: level },
         success: function(data) {
+            gameState = data.gameState;
             if (data.success) {
                 console.log('Difficulty level set to ' + level);
+                buildGameBoard();
             } else {
                 console.error('Error setting difficulty level:', data);
                 alert('Error setting difficulty level. Please check the server response.');
@@ -103,46 +138,28 @@ function setDifficulty(level) {
     });
 }
 
-// Function to flag a cell
-function flagCell(x, y) {
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:9000/game/flag',
-        data: { x: x, y: y },
-        success: function(data) {
-            if (data.success) {
-                updateCell(data);
-            } else {
-                console.error('Error flagging cell:', data);
-                alert('Error flagging cell. Please check the server response.');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error flagging cell:', error);
-            alert('Error flagging cell. Please check the server response.');
-        }
-    });
+function uncoverCell(x, y) {
+  $.ajax({
+    type: "POST",
+    url: "http://localhost:9000/game/uncover",
+    data: { x: x, y: y },
+    success: function(data) {
+      gameState = data.gameState;
+      buildGameBoard();
+    }
+  });
 }
 
-// Function to uncover a cell
-function uncoverCell(x, y) {
-    $.ajax({
-        type: 'POST',
-        url: 'http://localhost:9000/game/uncover',
-        data: { x: x, y: y },
-        success: function(data) {
-            if (data.success) {
-                updateCell(data);
-            } else {
-                console.error('Error uncovering cell:', data);
-                alert('Error uncovering cell. Please check the server response.');
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error uncovering cell:', error);
-            alert('Error uncovering cell. Please check the server response.');
-        }
-    });
+function flagCell(x, y) {
+  $.ajax({
+    type: "POST",
+    url: "http://localhost:9000/game/flag",
+    data: { x: x, y: y },
+    success: function(data) {
+      gameState = data.gameState;
+      buildGameBoard();
+    }
+  });
 }
 
 // Function to display bombs when the game is over
@@ -178,32 +195,6 @@ function displayBombs() {
   });
 }
 
-// Helper function to update a cell in the DOM
-function updateCell(x, y) {
-    $.ajax({ function(data) {
-            const cellData = $(data).find('cell');
-            const state = cellData.attr('state');
-            const display = cellData.text();
-
-            const cell = $(`[data-x='${x}'][data-y='${y}']`);
-            if (cell.length > 0) {
-                cell.addClass(state); // Update the cell's state
-
-                let cellContent = cell.find('.cell-content');
-                if (cellContent.length === 0) {
-                    cellContent = $('<span class="cell-content"></span>');
-                    cell.append(cellContent);
-                }
-                cellContent.html(display);
-            }
-        },
-        error: function(xhr, status, error) {
-            console.error('Error updating cell:', error);
-            alert('Error updating cell. Please check the server response.');
-        }
-    });
-}
-
 // Function to handle the undo event
 function undo() {
     $.ajax({
@@ -211,7 +202,9 @@ function undo() {
         url: 'http://localhost:9000/game/undo',
         success: function(data) {
             if (data.success) {
+                gameState = data.gameState;
                 console.log('Undo successful');
+                buildGameBoard();
             } else {
                 console.error('Error undoing:', data);
                 alert('Error undoing. Please check the server response.');
@@ -231,7 +224,9 @@ function restart() {
         url: 'http://localhost:9000/game/restart',
         success: function(data) {
             if (data.success) {
+                gameState = data.gameState;
                 console.log('Restart successful');
+                buildGameBoard();
             } else {
                 console.error('Error restarting:', data);
                 alert('Error restarting. Please check the server response.');
@@ -263,3 +258,6 @@ function saveGame() {
         }
     });
 }
+
+// Initial build of the game board
+buildGameBoard();

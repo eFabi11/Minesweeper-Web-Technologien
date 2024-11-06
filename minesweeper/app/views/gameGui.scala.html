@@ -1,5 +1,3 @@
-@(controller:de.htwg.se.minesweeper.controller.controller.Controller, gameState: String)
-
 @import helper._
 @import de.htwg.se.minesweeper.model.Symbols
 
@@ -26,54 +24,14 @@
     </header>
 
     <!-- Hauptinhalt für das Spiel -->
-    <div id="content" class="@gameState">
+    <div id="content" class="game">
         <div id="difficulty">
             <button id="easy" class="btn-custom mx-2">Easy</button>
             <button id="medium" class="btn-custom mx-2">Medium</button>
             <button id="hard" class="btn-custom mx-2">Hard</button>
         </div>
 
-        <script>
-            const gameState = "@gameState";
-
-            let gameOverHandled = false;
-
-            if ((gameState === "Lost" || gameState === "Won") && !gameOverHandled) {
-                displayBombs();
-                gameOverHandled = true;
-            }
-        </script>
-
-        <!-- Brennende "You Lost"-Meldung anzeigen, wenn das Spiel verloren ist -->
-        @if(gameState == "Lost") {
-            <div id="you-lost">
-                <img src="../assets/you_lost.png" alt="You Lost" class="lost-image" />
-            </div>
-        }
-
-        <div id="gameBoard">
-            @for(y <- 0 until controller.field.size) {
-                <div class="game-row">
-                    @for(x <- 0 until controller.field.size) {
-                        <div class="cell covered" data-x="@y" data-y="@x"
-                            onclick="uncoverCell(@y, @x)"
-                            oncontextmenu="flagCell(@y, @x); return false;">
-                            <span class="cell-content">
-                                @{
-                                    controller.field.cell(x, y) match {
-                                        case Symbols.Covered => Html("")
-                                        case Symbols.Flag => Html("🚩")
-                                        case Symbols.Bomb => Html(s"""<img src="${routes.Assets.versioned("assets/Mine.png")}" alt="Mine" class="mine-icon">""")
-                                        case Symbols.Empty => Html("&nbsp;")
-                                        case number => Html(number.toString)
-                                    }
-                                }
-                            </span>
-                        </div>
-                    }
-                </div>
-            }
-        </div>
+        <div id="gameBoard"></div>
 
         <div id="controls">
             <button id='undo' class="btn-custom mx-2">Undo</button>
@@ -82,19 +40,4 @@
             <button id='loadGamePage' class="btn-custom mx-2">Load Game</button>
         </div>
     </div>
-
-    <!-- JavaScript-Funktion für die Explosion und Neustart -->
-    <script>
-        function explodeAndRestart() {
-            const youLostElement = document.getElementById('you-lost');
-            if (youLostElement) {
-                youLostElement.classList.add('explode');
-                setTimeout(() => {
-                    window.location.href = '@routes.HomeController.restart()';
-                }, 1000); // Wartezeit für die Explosion
-            } else {
-                window.location.href = '@routes.HomeController.restart()';
-            }
-        }
-    </script>
 }
