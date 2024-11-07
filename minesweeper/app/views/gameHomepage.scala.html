@@ -4,7 +4,11 @@
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/homepage.css")">
     <link rel="shortcut icon" type="image/png" href="../assets/favicon-32x32.png">
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
+    <script src="@routes.Assets.versioned("javascripts/homepage.js")"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Minesweeper Rules</title>
@@ -94,18 +98,18 @@
 
 <section id="feedback" class="container mt-4">
     <h2>Feedback Form</h2>
-    <form>
+    <form id="feedbackForm" action="/submit-feedback" method="POST">
         <div class="mb-3">
             <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" required>
+            <input type="text" class="form-control" id="name" name="name" required>
         </div>
         <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" required>
+            <input type="email" class="form-control" id="email" name="email" required>
         </div>
         <div class="mb-3">
             <label for="message" class="form-label">Message</label>
-            <textarea class="form-control" id="message" rows="3" required></textarea>
+            <textarea class="form-control" id="message" name="message" rows="3" required></textarea>
         </div>
         <button type="submit" class="btn btn-success">Submit</button>
     </form>
@@ -115,8 +119,5 @@
     <a href='@routes.HomeController.gameGui()' class="btn start-game-button">Start Game</a>
 </h1>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
-<script src="@routes.Assets.versioned("javascripts/homepage.js")"></script>
 </body>
 </html>
