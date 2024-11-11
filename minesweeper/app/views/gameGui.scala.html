@@ -1,6 +1,3 @@
-@import helper._
-@import de.htwg.se.minesweeper.model.Symbols
-
 @main("Minesweeper GUI") {
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/main.css")">
     <link rel="shortcut icon" type="image/png" href="../assets/favicon-32x32.png">
@@ -19,7 +16,7 @@
     <!-- Graue Leiste oben -->
     <header>
         <nav id="top-nav">
-            <a href="@routes.HomeController.gameHomepage()" id="logo">Minesweeper</a>
+            <a id="logo">Minesweeper</a>
         </nav>
     </header>
 

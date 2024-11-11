@@ -49,37 +49,6 @@ $(document).ready(function() {
     });
 });
 
-function loadGame(gameId) {
-    $.ajax({
-        url: 'http://localhost:9000/loadGame/' + gameId,
-        type: 'GET',
-        success: function(response) {
-            window.location.href = response.redirect;
-        },
-        error: function(xhr, status, error) {
-            alert('Error loading game: ' + error);
-        }
-    });
-}
-
-function deleteGame(gameId) {
-    $.ajax({
-        url: 'http://localhost:9000/deleteGame/' + gameId,
-        type: 'POST',
-        success: function(response) {
-            if (response.success) {
-                alert('Game deleted successfully.');
-                location.reload();
-            } else {
-                alert('Error deleting game.');
-            }
-        },
-        error: function(xhr, status, error) {
-            alert('Error deleting game: ' + error);
-        }
-    });
-}
-
 $(document).ready(function() {
   $('#feedbackForm').submit(function(event) {
     event.preventDefault();
@@ -101,4 +70,26 @@ $(document).ready(function() {
       }
     });
   });
+});
+
+$(document).ready(function() {
+    $('#start-game-btn').click(function() {
+        $.ajax({
+            url: 'http://localhost:9000/game',
+            type: 'POST',
+            dataType: 'json',
+            success: function(response) {
+                if (response.success) {
+                    $('head').html(response.head);
+                    $('body').html(response.body);
+                } else {
+                    alert('Failed to load the game content');
+                }
+            },
+            error: function(xhr, status, error) {
+                console.log('Error:', error);
+                alert('Something went wrong! Please try again.');
+            }
+        });
+    });
 });

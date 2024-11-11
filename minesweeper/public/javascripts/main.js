@@ -68,23 +68,38 @@ function buildGameBoard() {
 }
 
 // Load game button
+$('#loadGamePage').on('click', function(event) {
+    event.preventDefault();
+    $.ajax({
+        type: 'POST',
+        url: 'http://localhost:9000/game/load',
+        dataType: 'json',
+        success: function(data) {
+            $('body').html(data.html);
+        },
+        error: function(xhr, status, error) {
+            console.error('Error loading game page:', error);
+            alert('Error loading game page. Please check the server response.');
+        }
+    });
+});
+
 $(document).ready(function() {
-    $('#loadGamePage').on('click', function(event) {
-        event.preventDefault();
+    $('#logo').click(function() {
         $.ajax({
+            url: 'http://localhost:9000/',
             type: 'GET',
-            url: 'http://localhost:9000/game/load',
-            dataType: 'json',
-            success: function(data) {
-                $('#content').html(data.games);
+            success: function(response) {
+                window.location.href = 'http://localhost:9000';
             },
             error: function(xhr, status, error) {
-                console.error('Error loading game:', error);
-                alert('Error loading game. Please check the server response.');
+                console.log('Error:', error);
+                alert('Something went wrong! Please try again.');
             }
         });
     });
 });
+
 
 $('#easy').on('click', function() {
     setDifficulty('E');
@@ -123,13 +138,8 @@ function setDifficulty(level) {
         data: { level: level },
         success: function(data) {
             gameState = data.gameState;
-            if (data.success) {
-                console.log('Difficulty level set to ' + level);
-                buildGameBoard();
-            } else {
-                console.error('Error setting difficulty level:', data);
-                alert('Error setting difficulty level. Please check the server response.');
-            }
+            console.log('Difficulty level set to ' + level);
+            buildGameBoard();
         },
         error: function(xhr, status, error) {
             console.error('Error setting difficulty level:', error);
@@ -146,6 +156,10 @@ function uncoverCell(x, y) {
     success: function(data) {
       gameState = data.gameState;
       buildGameBoard();
+    },
+    error: function(xhr, status, error) {
+        console.error('Error:', error);
+        alert('Error occurred while performing the action.');
     }
   });
 }
@@ -158,6 +172,10 @@ function flagCell(x, y) {
     success: function(data) {
       gameState = data.gameState;
       buildGameBoard();
+    },
+    error: function(xhr, status, error) {
+        console.error('Error:', error);
+        alert('Error occurred while performing the action.');
     }
   });
 }
@@ -201,14 +219,9 @@ function undo() {
         type: 'POST',
         url: 'http://localhost:9000/game/undo',
         success: function(data) {
-            if (data.success) {
-                gameState = data.gameState;
-                console.log('Undo successful');
-                buildGameBoard();
-            } else {
-                console.error('Error undoing:', data);
-                alert('Error undoing. Please check the server response.');
-            }
+            gameState = data.gameState;
+            console.log('Undo successful');
+            buildGameBoard();
         },
         error: function(xhr, status, error) {
             console.error('Error undoing:', error);
@@ -223,14 +236,9 @@ function restart() {
         type: 'POST',
         url: 'http://localhost:9000/game/restart',
         success: function(data) {
-            if (data.success) {
-                gameState = data.gameState;
-                console.log('Restart successful');
-                buildGameBoard();
-            } else {
-                console.error('Error restarting:', data);
-                alert('Error restarting. Please check the server response.');
-            }
+            gameState = data.gameState;
+            console.log('Restart successful');
+            buildGameBoard();
         },
         error: function(xhr, status, error) {
             console.error('Error restarting:', error);
@@ -245,12 +253,7 @@ function saveGame() {
         type: 'POST',
         url: 'http://localhost:9000/game/save',
         success: function(data) {
-            if (data.success) {
-                console.log('Save game successful');
-            } else {
-                console.error('Error saving game:', data);
-                alert('Error saving game. Please check the server response.');
-            }
+            console.log('Save game successful');
         },
         error: function(xhr, status, error) {
             console.error('Error saving game:', error);

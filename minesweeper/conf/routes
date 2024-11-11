@@ -5,8 +5,8 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.gameHomepage()
-GET     /game                       controllers.HomeController.gameGui()
-GET     /game/load                  controllers.HomeController.loadGamePage()
+POST    /game                       controllers.HomeController.gameGui()
+POST    /game/load                  controllers.HomeController.loadGamePage()
 
 POST    /game/getGameBoard          controllers.HomeController.getGameBoard()
 
@@ -21,8 +21,9 @@ POST    /game/save                  controllers.HomeController.saveGame()
 
 POST    /game/getBombMatrix         controllers.HomeController.getBombMatrix()
 
-GET     /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
+POST    /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
 POST    /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
+POST    /getGamesList               controllers.HomeController.getGamesList()
 
 
 # Map static resources from the /public folder to the /assets URL path
