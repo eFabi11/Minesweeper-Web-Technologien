@@ -258,7 +258,6 @@ function saveGame() {
         },
         error: function(xhr, status, error) {
             console.error('Error saving game:', error);
-            alert('Error saving game. Please check the server response.');
         }
     });
 }
