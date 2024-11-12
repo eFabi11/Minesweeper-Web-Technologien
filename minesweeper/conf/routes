@@ -5,19 +5,25 @@
 
 # An example controller showing a sample home page
 GET     /                           controllers.HomeController.gameHomepage()
-GET     /gui                        controllers.HomeController.gameGui()
-GET     /tui                        controllers.HomeController.gameTui()
-GET     /diff/:diff                 controllers.HomeController.setDifficulty(diff: String)
-GET     /uncover/:x/:y              controllers.HomeController.uncoverField(x: Int, y: Int)
-GET     /flag/:x/:y                 controllers.HomeController.flagField(x: Int, y: Int)
-GET     /undo                       controllers.HomeController.undo()
-GET     /restart                    controllers.HomeController.restart()
-GET     /saveGame                   controllers.HomeController.saveGame()
-GET     /loadGamePage               controllers.HomeController.loadGamePage()
-GET     /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
-GET     /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
-GET     /getBombMatrix              controllers.HomeController.getBombMatrix()
+POST    /game                       controllers.HomeController.gameGui()
+POST    /game/load                  controllers.HomeController.loadGamePage()
 
+POST    /game/getGameBoard          controllers.HomeController.getGameBoard()
+
+POST    /game/setDiff               controllers.HomeController.setDifficulty()
+
+POST    /game/uncover               controllers.HomeController.uncoverField()
+POST    /game/flag                  controllers.HomeController.flagField()
+
+POST    /game/undo                  controllers.HomeController.undo()
+POST    /game/restart               controllers.HomeController.restart()
+POST    /game/save                  controllers.HomeController.saveGame()
+
+POST    /game/getBombMatrix         controllers.HomeController.getBombMatrix()
+
+POST    /loadGame/:gameId           controllers.HomeController.loadGame(gameId: String)
+POST    /deleteGame/:gameId         controllers.HomeController.deleteGame(gameId: String)
+POST    /getGamesList               controllers.HomeController.getGamesList()
 
 
 # Map static resources from the /public folder to the /assets URL path

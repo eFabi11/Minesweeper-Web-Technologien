@@ -1,6 +1,3 @@
-@import scala.collection.Seq
-@(games: Seq[(String, String)])
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +6,10 @@
     <title>Load Game</title>
     <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/bootstrap.min.css")">
     <link rel="shortcut icon" type="image/png" href="../assets/favicon-32x32.png">
-    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/homepage.css")">
+    <link rel="stylesheet" href="@routes.Assets.versioned("stylesheets/saveGamePage.css")">
+    <script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="@routes.Assets.versioned("javascripts/saveGamePage.js")"></script>
 </head>
 <body>
 <header class="text-center">
@@ -18,26 +18,13 @@
 
 <section class="container my-5 p-4 bg-white rounded shadow">
     <h2 class="text-primary">Your Saved Games</h2>
-    <ul class="list-group">
-        @for((gameId, fileName) <- games) {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            Game: @fileName
-            <div>
-                <a class="btn btn-info btn-sm mr-2" href='@routes.HomeController.loadGame(gameId)'>Load</a>
-                <a class="btn btn-danger btn-sm" href='@routes.HomeController.deleteGame(gameId)'>Delete</a>
-            </div>
-        </li>
-        }
-    </ul>
+    <ul id="content"></ul>
 </section>
 
 <footer class="text-center my-5">
     <h1>
-        <a class="btn start-game-button" href='@routes.HomeController.gameGui()'>Start New Game</a>
+        <button id="start-game-btn" class="btn start-game-button">Start New Game</button>
     </h1>
 </footer>
-
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="@routes.Assets.versioned("javascripts/bootstrap.bundle.min.js")"></script>
 </body>
 </html>

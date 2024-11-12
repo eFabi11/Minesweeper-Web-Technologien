@@ -103,42 +103,61 @@ section img {
 }
 
 .container {
-    background-color: rgba(255, 255, 255, 0.75);
-    padding: 60px;
-    border-radius: 100px;
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: auto;
+}
+
+#content {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    height: auto;
 }
 
 /* List Group Styles */
 .list-group-item {
     position: relative;
-    display: flex;
+    display: flex;               /* Ensures items are placed horizontally */
     align-items: center;
-    padding: 15px;
+    justify-content: space-between; /* Distributes space between content */
+    padding: 5px 15px;           /* Reduced padding for space optimization */
     background-color: rgba(255, 255, 255, 0.9);
     border: none;
     border-radius: 5px;
-    margin-bottom: 10px;
+    margin-bottom: 5px;          /* Optional: Adjust the space between items */
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s, box-shadow 0.3s;
+    width: 100%;                 /* Ensure the list item spans the full width */
+}
+
+.list-group {
+    width: 100%
+    padding: 0; /* Remove extra padding around the list */
+    margin: 0; /* Remove extra margin around the list */
+}
+
+.list-group-item .btn {
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    margin-left: 10px; /* Adds space between the buttons */
+}
+
+.list-group-item .btn-info,
+.list-group-item .btn-danger {
+    flex-shrink: 0; /* Prevents buttons from shrinking */
+}
+
+/* Ensure text content or game names take available space */
+.list-group-item .game-name {
+    flex-grow: 1;
+    text-align: left;
 }
 
 .list-group-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
-ol.list-group {
-    counter-reset: list-counter;
-}
-
-ol.list-group > li::before {
-    counter-increment: list-counter;
-    content: counter(list-counter) ". ";
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #007bff;
-    margin-right: 10px;
 }
 
 /* Styling for the figure caption (footnote) */
@@ -214,7 +233,7 @@ p {
     }
 
     .container {
-        padding: 30px;
+        padding: 15px;
     }
 
     header {
@@ -233,7 +252,7 @@ p {
     }
 
     .container {
-        padding: 20px;
+        padding: 10px;
     }
 
     header {

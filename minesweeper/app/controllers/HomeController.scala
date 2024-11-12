@@ -7,6 +7,7 @@ import play.twirl.api.Html
 import scala.xml.XML
 import play.api.libs.json._
 import java.io.File
+import scala.concurrent._
 import java.nio.file.{Files, Paths, StandardCopyOption}
 
 import de.htwg.se.minesweeper.aview.{TUI, MinesweeperGUI}
@@ -31,29 +32,55 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   val fileIOXML = new FileIOXML()
 
-  def index() = Action { implicit request: Request[AnyContent] =>
-    Ok(views.html.index())
-  }
-
   def gameHomepage() = Action { implicit request: Request[AnyContent] =>
     Ok(views.html.gameHomepage())
   }
 
-  // TUI Game Board
-  def gameTui() = Action { implicit request: Request[AnyContent] =>
-    val gameBoardText = gameController.toString
-    val htmlGameBoardText = s"<pre>${gameBoardText.replace("\n", "<br>")}</pre>"
-    val html: Html = Html(htmlGameBoardText)
-    Ok(views.html.main(title = "Minesweeper TUI")(content = html))
-  }
-
-  // GUI Game Board
   def gameGui() = Action { implicit request: Request[AnyContent] =>
-    val gameState = gameController.game.gameState.toString
-    Ok(views.html.gameGui(gameController, gameState))
+    gameController.setDifficulty(new EasyDifficulty)
+
+    val htmlContent = views.html.gameGui().toString
+
+    val headContent = "<head>" + (htmlContent.split("<body>").head) + "</head>"
+    val bodyContent = htmlContent.split("<body>").last.split("</body>").head
+
+    Ok(Json.obj("success" -> true, "head" -> headContent, "body" -> bodyContent))
   }
 
-  def setDifficulty(diff: String) = Action { implicit request: Request[AnyContent] =>
+  def getGameBoard = Action { implicit request: Request[AnyContent] =>
+    val rows = gameController.field.size
+    val cols = gameController.field.size
+    val cells = (0 until rows).map { row =>
+      (0 until cols).map { col =>
+        gameController.field.cell(col, row) match {
+          case Symbols.Bomb => Json.obj("state" -> "bomb", "image" -> routes.Assets.versioned("assets/Mine.png").url)
+          case Symbols.Covered => Json.obj("state" -> "covered")
+          case Symbols.Empty => Json.obj("state" -> "empty")
+          case Symbols.Flag => Json.obj("state" -> "flag")
+          case number => Json.obj("state" -> "number", "value" -> number.toString)
+        }
+      }
+    }
+    val gameBoardJson = Json.obj(
+      "rows" -> rows,
+      "cols" -> cols,
+      "cells" -> cells
+    )
+    Ok(gameBoardJson)
+  }
+
+  def loadGamePage() = Action { implicit request: Request[AnyContent] =>
+    val htmlContent = views.html.loadGamePage().toString
+
+    val headContent = "<head>" + (htmlContent.split("<body>").head) + "</head>"
+    val bodyContent = htmlContent.split("<body>").last.split("</body>").head
+
+    Ok(Json.obj("success" -> true, "head" -> headContent, "body" -> bodyContent))
+  }
+
+  def setDifficulty = Action { implicit request: Request[AnyContent] =>
+    gameController.restart()
+    val diff = request.body.asFormUrlEncoded.get("level").head.toString
     val selectedStrategy: DifficultyStrategy = diff match {
       case "E" => new EasyDifficulty
       case "M" => new MediumDifficulty
@@ -63,27 +90,31 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         new EasyDifficulty
     }
     gameController.setDifficulty(selectedStrategy)
-    Redirect(routes.HomeController.gameGui()) 
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
-  def uncoverField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
+  def uncoverField = Action { implicit request =>
+    val x = request.body.asFormUrlEncoded.get("x").head.toInt
+    val y = request.body.asFormUrlEncoded.get("y").head.toInt
     gameController.uncoverField(x, y)
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
-  def flagField(x: Int, y: Int) = Action { implicit request: Request[AnyContent] =>
+  def flagField = Action { implicit request =>
+    val x = request.body.asFormUrlEncoded.get("x").head.toInt
+    val y = request.body.asFormUrlEncoded.get("y").head.toInt
     gameController.flagField(x, y)
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def undo() = Action { implicit request: Request[AnyContent] =>
     gameController.undo()
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def restart() = Action { implicit request: Request[AnyContent] =>
     gameController.restart()
-    Redirect(routes.HomeController.gameGui()) // Redirect to GUI
+    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString))
   }
 
   def getBombMatrix = Action { implicit request: Request[AnyContent] =>
@@ -94,20 +125,36 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
       case Symbols.Empty => " "
       case number => number.toString
     })
-    Ok(Json.toJson(bombMatrixJson)) // Convert bombMatrix to JSON and send response
+    Ok(Json.toJson(bombMatrixJson))
   }
 
-  def saveGame() = Action { implicit request: Request[AnyContent] =>
+  def saveGame() = Action.async { implicit request: Request[AnyContent] =>
     fileIOXML.save(gameController.field)
     moveAndRename()
-    Redirect(routes.HomeController.gameGui())
+    Future.successful(Ok(Json.obj("success" -> true)))
   }
 
-  def loadGame(name: String) = Action { implicit request: Request[AnyContent] =>
-    gameController.setField(loadXML(name))
+  def loadGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>
+    gameController.setField(loadXML(gameId))
     gameController.setFirstMove(false)
     gameController.game.gameState = GameStatus.Playing
-    Redirect(routes.HomeController.gameGui())
+
+    val htmlContent = views.html.gameGui().toString
+
+    val headContent = "<head>" + (htmlContent.split("<body>").head) + "</head>"
+    val bodyContent = htmlContent.split("<body>").last.split("</body>").head
+
+    Future.successful(Ok(Json.obj("success" -> true, "head" -> headContent, "body" -> bodyContent)))
+  }
+
+  def deleteGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>
+    val filePath = Paths.get(s"saves/$gameId.xml")
+    if (Files.exists(filePath)) {
+      Files.delete(filePath)
+      Future.successful(Ok(Json.obj("success" -> true)))
+    } else {
+      Future.successful(NotFound(Json.obj("error" -> "Game file not found.")))
+    }
   }
 
   def loadXML(name: String): Field = {
@@ -157,10 +204,14 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
   }
 
-  def loadGamePage() = Action { implicit request: Request[AnyContent] =>
+  def getGamesList() = Action { implicit request =>
     val games = listSavedGamesImpl()
-    Ok(views.html.loadGamePage(games))
+    val gamesJson = Json.toJson(games.map { case (gameId, fileName) =>
+      Json.obj("gameId" -> gameId, "fileName" -> fileName)
+    })
+    Ok(Json.obj("games" -> gamesJson))
   }
+
 
   def listSavedGamesImpl(): Seq[(String, String)] = {
     val savesDir = Paths.get("saves")
@@ -179,16 +230,5 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
         (gameId, fileName)
     })
     games.toSeq
-}
-
-
-  def deleteGame(gameId: String) = Action { implicit request: Request[AnyContent] =>
-      val filePath = Paths.get(s"saves/$gameId.xml")
-      if (Files.exists(filePath)) {
-          Files.delete(filePath)
-          Redirect(routes.HomeController.loadGamePage()).flashing("success" -> "Game deleted successfully.")
-      } else {
-          Redirect(routes.HomeController.loadGamePage()).flashing("error" -> "Game file not found.")
-      }
   }
 }
