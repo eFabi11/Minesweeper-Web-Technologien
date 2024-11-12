@@ -75,7 +75,8 @@ $('#loadGamePage').on('click', function(event) {
         url: 'http://localhost:9000/game/load',
         dataType: 'json',
         success: function(data) {
-            $('body').html(data.html);
+            $('head').html(data.head);
+            $('body').html(data.body);
         },
         error: function(xhr, status, error) {
             console.error('Error loading game page:', error);

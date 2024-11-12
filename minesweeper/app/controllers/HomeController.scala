@@ -71,7 +71,11 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
 
   def loadGamePage() = Action { implicit request: Request[AnyContent] =>
     val htmlContent = views.html.loadGamePage().toString
-    Ok(Json.obj("success" -> true, "html" -> htmlContent))
+
+    val headContent = "<head>" + (htmlContent.split("<body>").head) + "</head>"
+    val bodyContent = htmlContent.split("<body>").last.split("</body>").head
+
+    Ok(Json.obj("success" -> true, "head" -> headContent, "body" -> bodyContent))
   }
 
   def setDifficulty = Action { implicit request: Request[AnyContent] =>
