@@ -74,6 +74,7 @@ $(document).ready(function() {
 
 $(document).ready(function() {
     $('#start-game-btn').click(function() {
+        event.preventDefault();
         $.ajax({
             url: 'http://localhost:9000/game',
             type: 'POST',
