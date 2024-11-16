@@ -14,3 +14,5 @@ hs_err_pid*
 /.metals
 /.minesweeper/null
 /minesweeper/saves
+/minesweeper/node_modules
+/minesweeper/coverage
