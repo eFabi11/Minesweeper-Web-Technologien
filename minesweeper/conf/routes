@@ -11,6 +11,7 @@ POST    /game/load                  controllers.HomeController.loadGamePage()
 POST    /game/getGameBoard          controllers.HomeController.getGameBoard()
 
 POST    /game/setDiff               controllers.HomeController.setDifficulty()
+POST    /game/setDifficulty         controllers.HomeController.setDifficulty()
 
 POST    /game/uncover               controllers.HomeController.uncoverField()
 POST    /game/flag                  controllers.HomeController.flagField()
@@ -28,3 +29,9 @@ POST    /getGamesList               controllers.HomeController.getGamesList()
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+
+GET     /coop/ws/:gameId            controllers.HomeController.coopSocket(gameId: String)
+
+GET     /vs/ws/:gameId/:playerId    controllers.HomeController.vsWebSocket(gameId: String, playerId: String)
+
+

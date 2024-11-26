@@ -22,13 +22,31 @@
 
     <!-- Hauptinhalt für das Spiel -->
     <div id="content" class="game">
+
+        <div id="modeSelection">
+            <button id="singleMode" class="btn-custom mx-2">Single Player</button>
+            <button id="coopMode" class="btn-custom mx-2">Cooperative</button>
+            <button id="vsMode" class="btn-custom mx-2">Versus</button>
+        </div>
+
         <div id="difficulty">
             <button id="easy" class="btn-custom mx-2">Easy</button>
             <button id="medium" class="btn-custom mx-2">Medium</button>
             <button id="hard" class="btn-custom mx-2">Hard</button>
         </div>
+        
+        <div id="voteSummary" style="display: none;">
+            <h3>Abstimmungsergebnisse</h3>
+            <div id="difficultyVotes">
+                <div>Easy: <span id="votesEasy">0</span></div>
+                <div>Medium: <span id="votesMedium">0</span></div>
+                <div>Hard: <span id="votesHard">0</span></div>
+            </div>
+        </div>
+        
 
         <div id="gameBoard"></div>
+
 
         <div id="controls">
             <button id='undo' class="btn-custom mx-2">Undo</button>

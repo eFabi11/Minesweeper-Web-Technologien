@@ -23,12 +23,23 @@ import java.nio.file.{Files, Paths}
 import java.util.stream.Collectors
 import scala.collection.JavaConverters._
 
+import org.apache.pekko.actor._
+import org.apache.pekko.stream._
+import org.apache.pekko.stream.scaladsl._
+import play.api.libs.streams.ActorFlow
+import scala.concurrent.Future
+
+
+
 @Singleton
-class HomeController @Inject()(val controllerComponents: ControllerComponents) extends BaseController {
+class HomeController @Inject()(val controllerComponents: ControllerComponents)(implicit system: ActorSystem, mat: Materializer) extends BaseController {
 
   val game = new Game()
   val gameField = new Field(game.gridSize, Symbols.Covered)
   val gameController = new Controller(gameField, game)
+
+  private val gameSessions = scala.collection.mutable.Map[String, ActorRef]()
+  private val vsGameSessions = system.actorOf(VsGameSessionManager.props(), "vsGameSessions")
 
   val fileIOXML = new FileIOXML()
 
@@ -231,4 +242,18 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents) e
     })
     games.toSeq
   }
+
+  def coopSocket(gameId: String) = WebSocket.accept[JsValue, JsValue] { request =>
+    ActorFlow.actorRef { out =>
+      val gameActor = gameSessions.getOrElseUpdate(gameId, system.actorOf(GameSession.props(gameId), s"gameSession-$gameId"))
+      ClientActor.props(gameActor, out)
+    }
+  }
+
+  def vsWebSocket(gameId: String, playerId: String) = WebSocket.accept[JsValue, JsValue] { request =>
+    ActorFlow.actorRef { out =>
+      VsClientActor.props(gameId, playerId, out, vsGameSessions)
+    }
+  }
+
 }
