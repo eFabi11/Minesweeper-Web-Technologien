@@ -20,8 +20,9 @@ class VsGameSessionManager extends Actor {
 
   def receive: Receive = {
     case msg @ Join(gameId, playerId, clientActor) =>
+      val maxPlayers = 4 // Beispiel: Maximal 4 Spieler pro Spiel
       val session = sessions.getOrElse(gameId, {
-        val newSession = context.actorOf(VsGameSession.props(gameId), s"vsSession-$gameId")
+        val newSession = context.actorOf(VsGameSession.props(gameId, maxPlayers), s"vsSession-$gameId")
         sessions += gameId -> newSession
         newSession
       })

@@ -9,7 +9,7 @@ import de.htwg.se.minesweeper.model.game.Game
 import de.htwg.se.minesweeper.controller.controller.Controller
 
 object VsGameSession {
-  def props(gameId: String): Props = Props(new VsGameSession(gameId))
+  def props(gameId: String, maxPlayers: Int): Props = Props(new VsGameSession(gameId, maxPlayers))
 
   // Messages
   case class UpdateState(state: JsValue)
@@ -18,88 +18,100 @@ object VsGameSession {
   case class PlayerAction(playerId: String, action: String, data: JsValue)
 }
 
-class VsGameSession(gameId: String) extends Actor {
+class VsGameSession(gameId: String, maxPlayers: Int) extends Actor {
   import VsGameSession._
 
-  // Map of playerId to (clientActor, Controller)
   var players = Map.empty[String, (ActorRef, Controller)]
-  var difficultyVotes = Map.empty[String, DifficultyStrategy]
+  var difficultySet = false
+  var globalDifficulty: Option[DifficultyStrategy] = None
+
 
   def receive: Receive = {
     case Join(playerId, clientActor) =>
-      // Create a new game controller for the player
-      val game = new Game()
-      val gameField = new Field(game.gridSize, Symbols.Covered)
-      val gameController = new Controller(gameField, game)
-      players += (playerId -> (clientActor, gameController))
-      broadcastPlayers()
-
-    case Left(playerId) =>
-      players -= playerId
-      if (players.isEmpty) {
-        context.stop(self)
-      } else {
+      if (players.size < maxPlayers) {
+        val game = new Game()
+        val gameField = new Field(game.gridSize, Symbols.Covered)
+        val gameController = new Controller(gameField, game)
+        players += (playerId -> (clientActor, gameController))
         broadcastPlayers()
+
+        println(s"Player joined: $playerId, total players: ${players.size}")
+
+        if (!difficultySet) {
+          // Send 'setDifficulty' to first player
+          val firstPlayerId = players.keys.head
+          val (firstPlayerActor, _) = players(firstPlayerId)
+          println(s"Sending 'setDifficulty' to first player: $firstPlayerId")
+          firstPlayerActor ! UpdateState(Json.obj(
+            "action" -> "setDifficulty",
+            "players" -> players.keys.toSeq
+          ))
+        }
+
+        if (players.size == maxPlayers && difficultySet) {
+          broadcastStartGame(globalDifficulty.get)
+        }
+      } else {
+        clientActor ! UpdateState(Json.obj("action" -> "gameFull"))
       }
 
     case PlayerAction(playerId, action, data) =>
-      players.get(playerId) match {
-        case Some((_, gameController)) =>
-          action match {
-            case "voteDifficulty" =>
-              val level = (data \ "level").as[String]
-              val strategy = level match {
-                case "E" => new EasyDifficulty
-                case "M" => new MediumDifficulty
-                case "H" => new HardDifficulty
-                case _ => new EasyDifficulty
-              }
-              difficultyVotes += (playerId -> strategy)
-              if (difficultyVotes.size == players.size) {
-                // All players have voted
-                val selectedDifficulty = selectDifficulty()
-                players.values.foreach { case (_, controller) =>
-                  controller.setDifficulty(selectedDifficulty)
-                }
-                broadcastStartGame(selectedDifficulty)
-              }
+      action match {
+        case "setDifficulty" =>
+          if (!difficultySet && players.keys.headOption.contains(playerId)) {
+            val level = (data \ "level").as[String]
+            globalDifficulty = Some(level match {
+              case "E" => new EasyDifficulty
+              case "M" => new MediumDifficulty
+              case "H" => new HardDifficulty
+              case _   => new EasyDifficulty
+            })
+            difficultySet = true
 
-            case "uncover" =>
-              val x = (data \ "x").as[Int]
-              val y = (data \ "y").as[Int]
-              gameController.uncoverField(x, y)
-              broadcastGameStates()
+            players.values.foreach { case (_, controller) =>
+              controller.setDifficulty(globalDifficulty.get)
+            }
 
-            case "flag" =>
-              val x = (data \ "x").as[Int]
-              val y = (data \ "y").as[Int]
-              gameController.flagField(x, y)
-              broadcastGameStates()
-
-            case "undo" =>
-              gameController.undo()
-              broadcastGameStates()
-
-            case "restart" =>
-              gameController.restart()
-              broadcastGameStates()
-
-            // Add other actions as needed
+            broadcastStartGame(globalDifficulty.get)
+          } else {
+            sender() ! UpdateState(Json.obj("action" -> "error", "message" -> "Difficulty already set or unauthorized player"))
           }
-        case None =>
-          // Player not found
-          println(s"Player $playerId not found.")
+
+        case "uncover" =>
+          players.get(playerId).foreach { case (_, gameController) =>
+            val x = (data \ "x").as[Int]
+            val y = (data \ "y").as[Int]
+            gameController.uncoverField(x, y)
+            broadcastGameStates()
+          }
+
+        case "flag" =>
+          players.get(playerId).foreach { case (_, gameController) =>
+            val x = (data \ "x").as[Int]
+            val y = (data \ "y").as[Int]
+            gameController.flagField(x, y)
+            broadcastGameStates()
+          }
+
+        case "undo" =>
+          players.get(playerId).foreach { case (_, gameController) =>
+            gameController.undo()
+            broadcastGameStates()
+          }
+
+        case "restart" =>
+          players.get(playerId).foreach { case (_, gameController) =>
+            gameController.restart()
+            broadcastGameStates()
+          }
+
+        case _ =>
+          println(s"Unknown action: $action")
       }
 
-    case _ =>
-      // Ignore unknown messages
-  }
-
-  def selectDifficulty(): DifficultyStrategy = {
-    // Determine the most voted difficulty
-    val difficultyCount = difficultyVotes.values.groupBy(identity).mapValues(_.size)
-    val selectedDifficulty = difficultyCount.maxBy(_._2)._1
-    selectedDifficulty
+    case Left(playerId) =>
+      players -= playerId
+      broadcastPlayers()
   }
 
   def broadcastPlayers(): Unit = {
@@ -121,14 +133,14 @@ class VsGameSession(gameId: String) extends Actor {
     players.values.foreach { case (clientActor, _) =>
       clientActor ! UpdateState(message)
     }
+    broadcastGameStates()
   }
 
   def broadcastGameStates(): Unit = {
     val gameStates = players.map { case (playerId, (_, controller)) =>
-      val gameData = getGameStateAsJson(controller)
       Json.obj(
         "playerId" -> playerId,
-        "gameData" -> gameData
+        "gameData" -> getGameStateAsJson(controller)
       )
     }.toSeq
 
@@ -142,36 +154,17 @@ class VsGameSession(gameId: String) extends Actor {
     }
   }
 
-  def getGameStateAsJson(gameController: Controller): JsValue = {
-    val rows = gameController.field.size
-    val cols = gameController.field.size
-    val gameOver = gameController.game.gameState.toString == "Won" || gameController.game.gameState.toString == "Lost"
-
-    val cells = (0 until rows).map { row =>
-      (0 until cols).map { col =>
-        val cellValue = gameController.field.cell(col, row)
-        val cellStr = cellValue.toString
-        val coveredStr = Symbols.Covered.toString
-        val flagStr = Symbols.Flag.toString
-        val emptyStr = Symbols.Empty.toString
-        val bombStr = Symbols.Bomb.toString
-
-        cellStr match {
-        case `coveredStr` => Json.obj("state" -> "covered")
-        case `flagStr` => Json.obj("state" -> "flag")
-        case `emptyStr` => Json.obj("state" -> "empty")
-        case s if s.matches("[1-8]") => Json.obj("state" -> "number", "value" -> s)
-        case `bombStr` =>
-            if (gameOver) Json.obj("state" -> "bomb") else Json.obj("state" -> "covered")
-        case _ => Json.obj("state" -> "unknown")
+  def getGameStateAsJson(controller: Controller): JsValue = {
+  Json.obj(
+    "rows" -> controller.field.size,
+    "cols" -> controller.field.size,
+    "cells" -> Json.toJson(
+      (0 until controller.field.size).map { row =>
+        (0 until controller.field.size).map { col =>
+          controller.field.cell(col, row).toString
         }
       }
-    }
-    Json.obj(
-      "rows" -> rows,
-      "cols" -> cols,
-      "cells" -> cells,
-      "gameState" -> gameController.game.gameState.toString
     )
-  }
+  )
+}
 }

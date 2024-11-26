@@ -7,7 +7,9 @@ var gameId;
 var isCoopMode = false;
 var vsSocket;
 var playerId;
+var isFirstPlayer = false;
 var players = [];
+
 
 //-------------------- Event Listeners --------------------
 
@@ -63,7 +65,7 @@ $(document).ready(function() {
         buildGameBoard();
     });
 
-    $('#coopMode').on('click', function() {
+    $('#coopMode').off('click').on('click', function() {
         console.log("Coop mode selected");
         isCoopMode = true;
         gameId = prompt("Enter a game ID to join or create a new game:", "game_" + Date.now());
@@ -75,17 +77,17 @@ $(document).ready(function() {
     });
 
     // Difficulty buttons
-    $('#easy').on('click', function() {
+    $('#easy').off('click').on('click', function () {
         console.log("Easy difficulty selected");
         setDifficulty('E');
     });
-
-    $('#medium').on('click', function() {
+    
+    $('#medium').off('click').on('click', function () {
         console.log("Medium difficulty selected");
         setDifficulty('M');
     });
-
-    $('#hard').on('click', function() {
+    
+    $('#hard').off('click').on('click', function () {
         console.log("Hard difficulty selected");
         setDifficulty('H');
     });
@@ -109,8 +111,9 @@ $(document).ready(function() {
         saveGame();
     });
 
-    $('#vsMode').on('click', function () {
+    $('#vsMode').off('click').on('click', function () {
         console.log("Versus mode selected");
+        isCoopMode = false; // Stellen Sie sicher, dass isCoopMode auf false gesetzt ist
         gameId = prompt("Enter a game ID to join or create a new game:", "vs_" + Date.now());
         playerId = prompt("Enter your player name:", "Player_" + Date.now());
         console.log("Game ID entered:", gameId);
@@ -118,9 +121,12 @@ $(document).ready(function() {
     
         connectVsWebSocket();
         $('#modeSelection').hide();
-        $('#difficulty').show();
+        $('#difficulty').hide(); // Wir verstecken die Schwierigkeitsbuttons zunächst
         $('#controls').show();
     });
+    
+    
+    
 });
 
 //-------------------- Functions --------------------
@@ -218,16 +224,17 @@ function buildGameBoardFromData(data) {
     gameBoard.html(gameBoardHtml);
 
     // Add event listeners to each cell
-    $('.cell').on('click', function() {
-        var x = $(this).data('x');
-        var y = $(this).data('y');
+    $(`.cell[data-player="${playerId}"]`).off('click').on('click', function () {
+        const x = $(this).data('x');
+        const y = $(this).data('y');
         console.log("Cell clicked at:", x, y);
         uncoverCell(x, y);
     });
-    $('.cell').on('contextmenu', function(e) {
+    
+    $(`.cell[data-player="${playerId}"]`).off('contextmenu').on('contextmenu', function (e) {
         e.preventDefault();
-        var x = $(this).data('x');
-        var y = $(this).data('y');
+        const x = $(this).data('x');
+        const y = $(this).data('y');
         console.log("Cell right-clicked at:", x, y);
         flagCell(x, y);
     });
@@ -270,24 +277,35 @@ function buildGameBoard() {
 function setDifficulty(level) {
     console.log("Setting difficulty level to:", level);
     if (isCoopMode) {
+        // Koop-Modus
         sendCoopAction("setDifficulty", { level: level });
-    } else {
+    } else if (vsSocket && vsSocket.readyState === WebSocket.OPEN && isFirstPlayer) {
+        // Versus-Modus und erster Spieler
+        sendVsAction("setDifficulty", { level: level });
+        $('#difficulty').hide(); // Verberge die Schwierigkeitsbuttons nach Auswahl
+    } else if (!vsSocket && !isCoopMode) {
+        // Einzelspielermodus
         $.ajax({
-            type: 'POST',
-            url: 'http://localhost:9000/game/setDiff',
+            type: "POST",
+            url: "http://localhost:9000/game/setDifficulty",
             data: { level: level },
             success: function(data) {
-                console.log('Difficulty level set to ' + level);
-                gameState = data.gameState;
+                console.log("Difficulty set successfully");
                 buildGameBoard();
             },
             error: function(xhr, status, error) {
-                console.error('Error setting difficulty level:', error);
-                alert('Error setting difficulty level. Please check the server response.');
+                console.error('Error setting difficulty:', error);
+                alert('Fehler beim Festlegen des Schwierigkeitsgrads. Bitte versuchen Sie es erneut.');
             }
         });
+    } else {
+        alert("Nur der erste Spieler kann den Schwierigkeitsgrad festlegen.");
     }
 }
+
+
+
+
 
 function uncoverCell(x, y) {
     console.log("Uncover cell at:", x, y);
@@ -421,6 +439,7 @@ function restart() {
     }
 }
 
+
 // Function to handle the save game event
 function saveGame() {
     console.log("Save game action triggered");
@@ -439,6 +458,39 @@ function saveGame() {
         });
     }
 }
+function updateVoteStatus(votes) {
+    console.log("Votes received:", votes);
+    $('#votesEasy').text(votes["E"] || 0);
+    $('#votesMedium').text(votes["M"] || 0);
+    $('#votesHard').text(votes["H"] || 0);
+    $('#voteSummary').show();
+}
+
+
+function updateVoteSummary(difficultyCounts) {
+    console.log("Updating vote summary:", difficultyCounts);
+
+    // Aktualisieren der Stimmenanzahl
+    $('#votesEasy').text(difficultyCounts.Easy || 0);
+    $('#votesMedium').text(difficultyCounts.Medium || 0);
+    $('#votesHard').text(difficultyCounts.Hard || 0);
+
+    // Sicherstellen, dass die Anzeige sichtbar ist
+    $('#voteSummary').show();
+}
+
+
+
+function renderPlayerList(players) {
+    var playersContainer = $('#playersContainer');
+    playersContainer.empty();
+    players.forEach(function(player) {
+        playersContainer.append('<div class="player-item">' + player + '</div>');
+    });
+    playersContainer.append('<div class="player-count">Spieler: ' + players.length + ' / 4</div>');
+}
+
+
 
 function connectVsWebSocket() {
     if (vsSocket && vsSocket.readyState === WebSocket.OPEN) {
@@ -455,26 +507,58 @@ function connectVsWebSocket() {
         console.log("Versus WebSocket connected.");
     };
 
+    
+
     vsSocket.onmessage = function (event) {
-        console.log("Message received from Versus WebSocket:", event.data);
-        var data = JSON.parse(event.data);
+    const data = JSON.parse(event.data);
+    console.log("Received message:", data);
 
-        if (data.action === 'updatePlayers') {
-            console.log("Players updated:", data.players);
-            players = data.players;
-
-            // Optional: Implementiere diese Funktion, falls benötigt.
-            if (typeof updatePlayerList === "function") {
-                updatePlayerList(players);
-            } else {
-                console.warn("updatePlayerList function is not defined.");
+    switch (data.action) {
+        case "setDifficulty":
+            // Aktualisiere die Spielerliste und isFirstPlayer
+            if (data.players) {
+                players = data.players;
+                isFirstPlayer = (playerId === players[0]);
+                console.log("Spielerliste aktualisiert in 'setDifficulty':", players);
+                console.log("isFirstPlayer:", isFirstPlayer);
             }
-        } else if (data.action === 'startGame') {
-            console.log("Game starting with difficulty:", data.difficulty);
-        } else if (data.action === 'gameState') {
-            updateVsGameState(data);
+            if (isFirstPlayer) {
+                $('#difficulty').show(); // Zeige die Schwierigkeitsbuttons für den ersten Spieler
+            } else {
+                $('#difficulty').hide(); // Verberge die Schwierigkeitsbuttons für andere Spieler
+                console.log("Nicht der erste Spieler, 'setDifficulty' wird ignoriert.");
+            }
+            break;
+
+            case "updatePlayers":
+                players = data.players;
+                isFirstPlayer = (playerId === players[0]); // Bestimmt, ob der aktuelle Spieler der erste Spieler ist
+                console.log("Spielerliste aktualisiert in 'updatePlayers':", players);
+                console.log("isFirstPlayer:", isFirstPlayer);
+                renderPlayerList(players);
+                break;
+
+            case "startGame":
+                startGameWithDifficulty(data.difficulty);
+                break;
+
+            case "gameState":
+                updateVsGameState(data);
+                break;
+
+            case "error":
+                alert(data.message || "Es ist ein Fehler aufgetreten.");
+                break;
+
+            case "gameFull":
+                alert("Das Spiel ist bereits voll!");
+                break;
+
+            default:
+                console.warn("Unbekannte Aktion:", data.action);
         }
     };
+    
 
     vsSocket.onerror = function (error) {
         console.error("WebSocket error:", error);
@@ -500,49 +584,58 @@ function sendVsAction(action, data) {
     }
 }
 
-function updateVsGameState(data) {
-    console.log("Updating Versus game state");
-    // `data` enthält die Spielzustände aller Spieler
-    // Beispiel: data.gameStates = [{ playerId: "Player_1", gameData: { ... } }, ...]
+function startGameWithDifficulty(difficulty) {
+    console.log("Game starting with difficulty:", difficulty);
+    $('#difficulty').hide();
+    $('#controls').show();
+}
 
-    // Spielfelder aller Spieler rendern
+
+function updateVsGameState(data) {
+    console.log("Updating game state:", data);
     buildVsGameBoards(data.gameStates);
 }
 
+
+
 function buildVsGameBoards(gameStates) {
     console.log("Building game boards for all players");
-    gameBoard.html(''); // Spielbereich leeren
 
-    for (var i = 0; i < gameStates.length; i++) {
-        var state = gameStates[i];
-        var playerName = state.playerId;
-        var gameData = state.gameData;
+    // Fügen Sie die Klasse 'vs-mode' zum gameBoard hinzu
+    gameBoard.attr('class', 'vs-mode'); // Setzt die Klasse 'vs-mode' auf den #gameBoard-Container
 
-        var boardHtml = '<div class="player-board">';
-        boardHtml += '<h3>' + playerName + '</h3>';
+    gameBoard.html(''); // Clear the game area
+
+    gameStates.forEach(state => {
+        const playerName = state.playerId;
+        const gameData = state.gameData;
+
+        // Create a game board for each player
+        let boardHtml = `<div class="player-board" id="board-${playerName}">`;
+        boardHtml += `<h3>${playerName}</h3>`;
         boardHtml += buildGameBoardHtml(gameData, playerName);
-        boardHtml += '</div>';
+        boardHtml += `</div>`;
 
         gameBoard.append(boardHtml);
-    }
+    });
 
-    // Event-Listener für die eigenen Zellen hinzufügen
-    if (gameState === "Playing") {
-        $('.cell[data-player="' + playerId + '"]').on('click', function () {
-            var x = $(this).data('x');
-            var y = $(this).data('y');
-            console.log("Cell clicked at:", x, y);
-            uncoverCell(x, y);
-        });
-        $('.cell[data-player="' + playerId + '"]').on('contextmenu', function (e) {
-            e.preventDefault();
-            var x = $(this).data('x');
-            var y = $(this).data('y');
-            console.log("Cell right-clicked at:", x, y);
-            flagCell(x, y);
-        });
-    }
+    // Enable interactions only for the current player's game board
+    $(`.cell[data-player="${playerId}"]`).off('click').on('click', function () {
+        const x = $(this).data('x');
+        const y = $(this).data('y');
+        console.log("Cell clicked at:", x, y);
+        uncoverCell(x, y);
+    });
+
+    $(`.cell[data-player="${playerId}"]`).off('contextmenu').on('contextmenu', function (e) {
+        e.preventDefault();
+        const x = $(this).data('x');
+        const y = $(this).data('y');
+        console.log("Cell right-clicked at:", x, y);
+        flagCell(x, y);
+    });
 }
+
 
 function buildGameBoardHtml(data, playerName) {
     var rows = data.rows;
@@ -550,26 +643,49 @@ function buildGameBoardHtml(data, playerName) {
     var cells = data.cells;
 
     var boardHtml = '<div class="gameBoard">';
-    for (var i = 0; i < rows; i++) {
+    for (var row = 0; row < rows; row++) {
         boardHtml += '<div class="game-row">';
-        for (var j = 0; j < cols; j++) {
-            var cell = cells[i][j];
-            var cellClasses = 'cell ' + cell.state;
+        for (var col = 0; col < cols; col++) {
+            var cellValue = cells[row][col];
+            var cellClasses = 'cell';
+            var cellContent = '';
+            switch (cellValue) {
+                case '-':
+                    cellClasses += ' covered';
+                    break;
+                case 'f':
+                    cellClasses += ' flag';
+                    cellContent = '&#x1F6A9;'; // Flag emoji
+                    break;
+                case '*':
+                    cellClasses += ' bomb';
+                    cellContent = '<img src="/assets/Mine.png" alt="Mine" class="mine-icon">';
+                    break;
+                case ' ':
+                case '0':
+                    cellClasses += ' empty';
+                    cellContent = '&nbsp;'; // Non-breaking space
+                    break;
+                case '1':
+                case '2':
+                case '3':
+                case '4':
+                case '5':
+                case '6':
+                case '7':
+                case '8':
+                    cellClasses += ' number';
+                    cellContent = cellValue;
+                    break;
+                default:
+                    cellClasses += ' unknown';
+                    break;
+            }
             if (playerName === playerId) {
                 cellClasses += ' own-cell';
             }
-            boardHtml += '<div class="' + cellClasses + '" data-x="' + i + '" data-y="' + j + '" data-player="' + playerName + '">';
-            boardHtml += '<span class="cell-content">';
-            if (cell.state === 'bomb') {
-                boardHtml += '<img src="/assets/Mine.png" alt="Mine" class="mine-icon">';
-            } else if (cell.state === 'flag') {
-                boardHtml += '&#x1F6A9;';
-            } else if (cell.state === 'empty') {
-                boardHtml += '&nbsp;';
-            } else if (cell.state === 'number') {
-                boardHtml += cell.value;
-            }
-            boardHtml += '</span></div>';
+            boardHtml += '<div class="' + cellClasses + '" data-x="' + row + '" data-y="' + col + '" data-player="' + playerName + '">';
+            boardHtml += '<span class="cell-content">' + cellContent + '</span></div>';
         }
         boardHtml += '</div>';
     }
@@ -577,7 +693,3 @@ function buildGameBoardHtml(data, playerName) {
 
     return boardHtml;
 }
-
-
-// Initial build of the game board
-// buildGameBoard(); // We don't build the game board until a mode is selected
