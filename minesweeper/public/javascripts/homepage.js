@@ -50,30 +50,8 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-  $('#feedbackForm').submit(function(event) {
-    event.preventDefault();
-
-    var formData = $(this).serialize();
-
-    $.ajax({
-      url: $(this).attr('action'),
-      type: $(this).attr('method'),
-      data: formData,
-      success: function(response) {
-        console.log("Feedback submitted successfully:", response);
-        alert("Thank you for your feedback!");
-        $('#feedbackForm')[0].reset(); // Clear the form
-      },
-      error: function(xhr, status, error) {
-        console.error("Feedback submission failed:", error);
-        alert("There was an error submitting your feedback. Please try again.");
-      }
-    });
-  });
-});
-
-$(document).ready(function() {
     $('#start-game-btn').click(function() {
+        event.preventDefault();
         $.ajax({
             url: 'http://localhost:9000/game',
             type: 'POST',
