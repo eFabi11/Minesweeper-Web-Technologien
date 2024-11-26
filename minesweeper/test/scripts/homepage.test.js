@@ -20,18 +20,21 @@ describe('JavaScript Functional Tests', function () {
           <button id="start-game-btn">Start Game</button>
         `;
         require('./../../public/javascripts/homepage.js');
-    });
 
-
-    beforeEach(function () {
         sandbox = sinon.createSandbox();
+
+        // Mock animate globally
+        jest.spyOn($.fn, 'animate').mockImplementation(function (props, duration, callback) {
+            // Simulate scroll action
+            $(window).scrollTop(props.scrollTop);
+            if (callback) callback();
+        });
     });
 
     afterEach(function () {
         sandbox.restore();
-        if ($.ajax.restore) $.ajax.restore();
+        jest.restoreAllMocks();
     });
-
 
     // Test the window load event
     it('should remove "small" class from header on window load', function () {
@@ -128,9 +131,9 @@ describe('JavaScript Functional Tests', function () {
 
             expect(event.isDefaultPrevented()).toBe(true);
             expect($(window).scrollTop()).isCloseTo(
-                targetSection.offset().top - $('#navbar').outerHeight() - 25, 5);
+                targetSection.offset().top - $('#navbar').outerHeight() - 25, 5
+            );
             done();
-
         });
     });
 
