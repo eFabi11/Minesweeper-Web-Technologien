@@ -39,6 +39,25 @@ export default {
 
 <style scoped>
 
+    /* Navbar Styles */
+    #navbar {
+        padding: 0.5rem 1rem;
+    }
+
+    .navbar-brand {
+        font-size: 1.5rem;
+    }
+
+    .nav-link {
+        padding: 0.5rem 1rem;
+        font-size: 0.9rem;
+    }
+
+    .btn-primary {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.9rem;
+    }
+
     /* Bootstrap Overrides */
     .navbar {
       background-color: #007bff;
@@ -50,5 +69,4 @@ export default {
       font-weight: bold;
       color: #ffc107 !important;
     }
-
 </style>

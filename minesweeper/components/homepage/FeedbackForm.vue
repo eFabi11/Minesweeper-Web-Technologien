@@ -41,9 +41,6 @@ export default {
 
 <style scoped>
 
-    @import url(https://fonts.googleapis.com/css?family=Bitter);
-    @import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
-
     /* Heading */
     h2 {
         color: #007bff;

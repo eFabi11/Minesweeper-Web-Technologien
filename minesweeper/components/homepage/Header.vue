@@ -42,4 +42,26 @@ export default {
     #header-scroll.small h1 {
         font-size: 1.5rem;
     }
+
+    /* Responsive Styles */
+    @media (max-width: 768px) {
+        #title {
+            font-size: 4rem;
+        }
+
+        header {
+            padding: 80px 0;
+        }
+    }
+
+    @media (max-width: 576px) {
+        #title {
+            font-size: 2.5rem;
+        }
+
+        header {
+            padding: 60px 0;
+        }
+    }
+
 </style>
