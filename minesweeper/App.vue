@@ -22,14 +22,14 @@
 </template>
 
 <script>
-import Header from './components/Header.vue';
-import Navbar from './components/Navbar.vue';
-import HowToPlay from './components/HowToPlay.vue';
-import History from './components/History.vue';
-import Function from './components/Function.vue';
-import Visuals from './components/Visuals.vue';
-import FeedbackForm from './components/FeedbackForm.vue';
-import StartGame from './components/StartGame.vue';
+import Header from './components/homepage/Header.vue';
+import Navbar from './components/homepage/Navbar.vue';
+import HowToPlay from './components/homepage/HowToPlay.vue';
+import History from './components/homepage/History.vue';
+import Function from './components/homepage/Function.vue';
+import Visuals from './components/homepage/Visuals.vue';
+import FeedbackForm from './components/homepage/FeedbackForm.vue';
+import StartGame from './components/homepage/StartGame.vue';
 
 export default {
   components: {
