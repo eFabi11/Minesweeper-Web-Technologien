@@ -38,14 +38,17 @@ export default {
 </script>
 
 <style scoped>
-.navbar {
-  background-color: #007bff;
-}
-.navbar-nav .nav-item .nav-link {
-  color: white !important;
-}
-.navbar-nav .nav-item .nav-link.active {
-  font-weight: bold;
-  color: #ffc107 !important;
-}
+
+    /* Bootstrap Overrides */
+    .navbar {
+      background-color: #007bff;
+    }
+    .navbar-nav .nav-item .nav-link {
+      color: white !important;
+    }
+    .navbar-nav .nav-item .nav-link.active {
+      font-weight: bold;
+      color: #ffc107 !important;
+    }
+
 </style>

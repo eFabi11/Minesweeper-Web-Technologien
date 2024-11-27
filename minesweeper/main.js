@@ -1,9 +1,6 @@
 import { createApp } from 'vue';
 import App from './App.vue';
 
-// Import global styles (if any)
-import './public/stylesheets/homepage.css';
-
 const app = createApp(App);
 
 // Scroll handling logic

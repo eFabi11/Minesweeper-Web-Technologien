@@ -12,12 +12,17 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-p {
-  font-size: 1rem;
-  color: #555;
-}
+
+    /* Heading */
+    h2 {
+        color: #007bff;
+        margin-top: 15px;
+    }
+
+    p {
+        text-align: justify;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
 </style>

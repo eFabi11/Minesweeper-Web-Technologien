@@ -18,12 +18,42 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-p {
-  font-size: 1rem;
-  color: #555;
-}
+
+    /* Heading */
+    h2 {
+        color: #007bff;
+        margin-top: 15px;
+    }
+
+    .list-group-item {
+        position: relative;
+        display: flex;
+        align-items: center;
+        padding: 15px;
+        background-color: rgba(255, 255, 255, 0.9);
+        border: none;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .list-group-item:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    ol.list-group {
+        counter-reset: list-counter;
+    }
+
+    ol.list-group > li::before {
+        counter-increment: list-counter;
+        content: counter(list-counter) ". ";
+        font-size: 1.5em;
+        font-weight: bold;
+        color: #007bff;
+        margin-right: 10px;
+    }
+
 </style>

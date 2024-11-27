@@ -31,12 +31,46 @@ export default {
 </script>
 
 <style scoped>
-h2 {
-  font-size: 2rem;
-  margin-bottom: 1rem;
-}
-p {
-  font-size: 1rem;
-  color: #555;
-}
+
+    /* Heading */
+    h2 {
+        color: #007bff;
+        margin-top: 15px;
+    }
+
+    /* Hover effect for images specifically */
+    .visual-image {
+        border-radius: 8px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* Styling for the figure caption (footnote) */
+    figure {
+        display: inline-block;
+        text-align: center;
+        margin: 15px auto;
+        transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+
+    figure:hover {
+        transform: scale(1.015);
+    }
+
+    /* Hover effect for images specifically */
+    .visual-image {
+        border-radius: 8px;
+        display: block;
+        margin: 0 auto;
+    }
+
+    /* Styling for the figure caption (footnote) */
+    figcaption {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 8px;
+        font-style: italic;
+        transition: text-shadow 0.3s ease-in-out;
+    }
+
 </style>

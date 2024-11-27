@@ -11,3 +11,19 @@ export default {
   name: "HowToPlay"
 };
 </script>
+
+<style scoped>
+
+    /* Heading */
+    h2 {
+        color: #007bff;
+        margin-top: 15px;
+    }
+
+    p {
+        text-align: justify;
+        line-height: 1.6;
+        margin-bottom: 15px;
+    }
+
+</style>
