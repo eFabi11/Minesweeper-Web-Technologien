@@ -7,15 +7,25 @@ export default defineConfig({
   build: {
     outDir: 'public', // This is where the Vite build will output to
     assetsDir: 'assets', // This is the folder for your assets (e.g., images, styles)
+    assetsInclude: ['**/*.mp4'],
     rollupOptions: {
       input: {
         main: 'main.js', // Your main entry JS file
-      }
-    }
+      },
+    },
   },
   server: {
     proxy: {
-      '/assets': 'http://localhost:9000', // Play Framework assets proxying (optional)
-    }
-  }
+      '/assets': {
+        target: 'http://localhost:9000',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/game': {
+        target: 'http://localhost:9000',
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 });

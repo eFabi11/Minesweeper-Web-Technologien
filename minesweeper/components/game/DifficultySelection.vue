@@ -1,23 +1,23 @@
 <template>
-  <div class="mode-selection">
-    <button class="btn-custom" @click="selectMode('single')">Single Player</button>
-    <button class="btn-custom" @click="selectMode('coop')">Cooperative</button>
-    <button class="btn-custom" @click="selectMode('versus')">Versus</button>
+  <div class="difficulty-selection">
+    <button class="btn-custom" @click="selectDifficulty('easy')">Easy</button>
+    <button class="btn-custom" @click="selectDifficulty('medium')">Medium</button>
+    <button class="btn-custom" @click="selectDifficulty('hard')">Hard</button>
   </div>
 </template>
 
 <script>
 export default {
   methods: {
-    selectMode(mode) {
-      this.$emit("modeSelected", mode); // Emit the selected mode to the parent component
+    selectDifficulty(level) {
+      this.$emit("difficultySelected", level); // Emit the selected difficulty to the parent component
     },
   },
 };
 </script>
 
 <style scoped>
-.mode-selection {
+.difficulty-selection {
   display: flex;
   gap: 1rem;
   justify-content: center;

@@ -1,16 +1,20 @@
 <template>
   <div id="background">
     <video autoplay loop muted playsinline>
-      <source src="/app/assets/Minesweeper.mp4" type="video/mp4" />
+      <source :src="videoSource" type="video/mp4" />
+      Ihr Browser unterstützt das Video-Tag nicht.
     </video>
   </div>
 </template>
 
-
-
 <script>
 export default {
   name: "Background",
+  data() {
+    return {
+      videoSource: new URL('@/assets/Minesweeper.mp4', import.meta.url).href,
+    };
+  },
 };
 </script>
 
