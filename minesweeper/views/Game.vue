@@ -10,9 +10,9 @@
 </template>
 
 <script>
-import Background from './Background.vue';
-import Navbar from './Navbar.vue';
-import ModeSelection from './ModeSelection.vue';
+import Background from '../components/game/Background.vue';
+import Navbar from '../components/game/Navbar.vue';
+import ModeSelection from '../components/game/ModeSelection.vue';
 
 export default {
   components: {

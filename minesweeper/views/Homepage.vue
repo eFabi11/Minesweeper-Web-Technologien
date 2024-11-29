@@ -23,14 +23,14 @@
 
 <script>
 /* Imports of Components for Homepage */
-import Header from './Header.vue';
-import Navbar from './Navbar.vue';
-import HowToPlay from './HowToPlay.vue';
-import History from './History.vue';
-import Function from './Function.vue';
-import Visuals from './Visuals.vue';
-import FeedbackForm from './FeedbackForm.vue';
-import StartGame from './StartGame.vue';
+import Header from '../components/homepage/Header.vue';
+import Navbar from '../components/homepage/Navbar.vue';
+import HowToPlay from '../components/homepage/HowToPlay.vue';
+import History from '../components/homepage/History.vue';
+import Function from '../components/homepage/Function.vue';
+import Visuals from '../components/homepage/Visuals.vue';
+import FeedbackForm from '../components/homepage/FeedbackForm.vue';
+import StartGame from '../components/homepage/StartGame.vue';
 
 export default {
   components: {
