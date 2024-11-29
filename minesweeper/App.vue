@@ -1,8 +1,8 @@
 <template>
   <div :style="{ backgroundColor: '#f5f5f5' }">
     <Homepage v-if="!gameStarted" @start-game="startGame" />
-    <!-- <Game v-else /> -->
-    <LoadGame v-else />
+    <Game v-else />
+    <!-- <LoadGame v-else /> -->
   </div>
 </template>
 
