@@ -49,6 +49,13 @@ export default {
       type: String,
       required: true,
     },
+    mode: {
+      type: String,
+      required: true,
+    },
+    coopBoardData: {
+      type: Object,
+    }
   },
   name: "GameBoard",
   setup(props, { emit }) {
@@ -58,36 +65,58 @@ export default {
       () => props.gameState,
       (newGameState) => {
         console.log("Game state changed to:", newGameState);
-        // Perform actions based on the new game state
-        if (newGameState === "Lost" || newGameState === "Won") {
-          console.log("Game over. State:", newGameState);
-          // Add any other actions to handle these states
-        }
+      }
+    );
+
+    watch(
+      () => props.mode,
+      (gameMode) => {
+        console.log("Game mode changed to:", gameMode);
       }
     );
 
     const buildGameBoard = async () => {
-      console.log("Building game board in single player mode");
+      console.log("Building game board in ", props.mode, " mode");
 
-      try {
-        const response = await axios.post("http://localhost:9000/game/getGameBoard");
-        const data = response.data;
-        console.log("Game board data received from server");
+      if (props.mode === "coop") {
+        console.log("Build GameBoard for Coop mode");
+        watch(
+          () => props.coopBoardData,
+          (data) => {
+            gameBoardData.value = {
+              rows: data.rows,
+              cols: data.cols,
+              cells: data.cells,
+            };
+          }
+        );
+      }
 
-        gameBoardData.value = {
-          rows: data.cells,
-          cols: data.cols,
-          cells: data.cells,
-        };
+      if (props.mode === "versus") {
 
-        console.log("Game State before displayBombs condition:", props.gameState);
+      }
 
-        if (props.gameState === "Lost" || props.gameState === "Won") {
-          console.log("Game over. State:", props.gameState);
-          await displayBombs();
+      if (props.mode === "single") {
+        try {
+          const response = await axios.post("http://localhost:9000/game/getGameBoard");
+          const data = response.data;
+          console.log("Game board data received from server");
+
+          gameBoardData.value = {
+            rows: data.rows,
+            cols: data.cols,
+            cells: data.cells,
+          };
+
+          console.log("Game State before displayBombs condition:", props.gameState);
+
+          if (props.gameState === "Lost" || props.gameState === "Won") {
+            console.log("Game over. State:", props.gameState);
+            await displayBombs();
+          }
+        } catch (error) {
+          console.error("Error fetching game board:", error);
         }
-      } catch (error) {
-        console.error("Error fetching game board:", error);
       }
     };
 
@@ -171,7 +200,9 @@ export default {
     };
 
     onMounted(() => {
-      buildGameBoard();
+    if (props.mode === "single") {
+        buildGameBoard();
+      }
     });
 
     return {

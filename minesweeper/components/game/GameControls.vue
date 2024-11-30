@@ -63,7 +63,6 @@ export default {
         .then(response => response.json())
         .then(data => {
           console.log('Save game successful');
-          this.$emit('game-state-updated', data.gameState);
         })
         .catch(error => {
           console.error('Error saving game:', error);

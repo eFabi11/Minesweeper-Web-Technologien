@@ -12,28 +12,45 @@ import axios from 'axios';  // Import axios
 const backendUrl = 'http://localhost:9000';
 
 export default {
+  props: {
+    mode: {
+      type: String,
+      required: true,
+    }
+  },
   methods: {
     setDifficulty(diff) {
-      console.log("Setting difficulty level to:", diff);
 
-      // Create URLSearchParams to send as URL-encoded data
-      const params = new URLSearchParams();
-      params.append('level', diff);
+      if(this.mode === 'coop') {
+          this.$emit("selectedDifficulty", diff, "coop");
+      }
 
-      // Use fetch to send a POST request to set the difficulty
-      fetch(`${backendUrl}/game/setDifficulty`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      })
-        .then(response => response.json())
-        .then(data => {
-          this.$emit("selectedDifficulty", diff);
+      if(this.mode === 'versus') {
+          this.$emit("selectedDifficulty", diff, "versus");
+      }
+
+      if(this.mode === 'single') {
+        console.log("Setting difficulty level to:", diff);
+
+        // Create URLSearchParams to send as URL-encoded data
+        const params = new URLSearchParams();
+        params.append('level', diff);
+
+        // Use fetch to send a POST request to set the difficulty
+        fetch(`${backendUrl}/game/setDifficulty`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
         })
-        .catch(error => {
-          console.error('Error setting difficulty:', error);
-          alert('Fehler beim Festlegen des Schwierigkeitsgrads. Bitte versuchen Sie es erneut.');
-        });
+          .then(response => response.json())
+          .then(data => {
+            this.$emit("selectedDifficulty", diff, "single");
+          })
+          .catch(error => {
+            console.error('Error setting difficulty:', error);
+            alert('Fehler beim Festlegen des Schwierigkeitsgrads. Bitte versuchen Sie es erneut.');
+          });
+      }
     }
   }
 };

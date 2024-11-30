@@ -12,6 +12,7 @@
       <!-- Schwierigkeitsauswahl -->
       <DifficultySelection
         v-if="modeSelected && !selectedDifficulty"
+        :mode="modeSelected"
         @selectedDifficulty="handleDifficultySelection"
       />
 
@@ -20,6 +21,8 @@
         ref="gameBoard"
         v-if="selectedDifficulty"
         :gameState="gameState"
+        :mode="modeSelected"
+        :coopBoardData="coopBoardData"
         @game-state-updated="handleGameStateUpdate"
       />
 
@@ -31,6 +34,12 @@
         @game-state-updated="handleGameStateUpdate"
       />
     </div>
+
+    <Socket
+      ref="socket"
+      @build-coop-game-boards="buildCoopGameBoards"
+    />
+
   </div>
 </template>
 
@@ -41,6 +50,7 @@ import ModeSelection from '../components/game/ModeSelection.vue';
 import DifficultySelection from '../components/game/DifficultySelection.vue';
 import GameBoard from '../components/game/GameBoard.vue';
 import GameControls from '../components/game/GameControls.vue';
+import Socket from '../components/game/Socket.vue';
 
 export default {
   components: {
@@ -50,12 +60,14 @@ export default {
     DifficultySelection,
     GameBoard,
     GameControls,
+    Socket,
   },
   data() {
     return {
       gameState: "Playing",
       modeSelected: null,
       selectedDifficulty: null,
+      coopBoardData: null,
     };
   },
   methods: {
@@ -67,8 +79,21 @@ export default {
     },
     handleModeSelection(mode) {
       this.modeSelected = mode;
+
+      if (mode === 'coop') {
+        this.$refs.socket.connectCoopWebSocket();
+      }
     },
-    handleDifficultySelection(difficulty) {
+    handleDifficultySelection(difficulty, mode) {
+      switch (mode) {
+        case 'coop':
+          console.log("Setting difficulty level to:", difficulty);
+          this.$refs.socket.sendCoopAction('setDifficulty', { level: difficulty});
+          break;
+        case 'versus':
+
+          break;
+      }
       this.selectedDifficulty = difficulty;
     },
     handleLoadGame() {
@@ -76,6 +101,11 @@ export default {
     },
     async handleGameStateUpdate(newGameState) {
       this.gameState = newGameState;
+      this.$refs.gameBoard.buildGameBoard();
+    },
+    buildCoopGameBoards(data) {
+      this.coopBoardData = data;
+      console.log("Received coop board data:", this.coopBoardData);
       this.$refs.gameBoard.buildGameBoard();
     },
   },
