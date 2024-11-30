@@ -1,86 +1,338 @@
 <template>
-  <div class="game-board">
-    <!-- Spielfeld wird hier generiert -->
-    <div v-for="(row, rowIndex) in cells" :key="rowIndex" class="game-row">
+  <div id="gameBoard">
+    <div
+      v-for="(row, i) in gameBoardData.rows"
+      :key="i"
+      class="game-row"
+    >
       <div
-        v-for="(cell, colIndex) in row"
-        :key="colIndex"
+        v-for="(cell, j) in row"
+        :key="j"
         :class="['cell', cell.state]"
-        @click="handleCellClick(rowIndex, colIndex)"
-        @contextmenu.prevent="handleRightClick(rowIndex, colIndex)"
+        :data-x="i"
+        :data-y="j"
+        @click="handleCellClick(i, j)"
+        @contextmenu.prevent="handleCellRightClick(i, j)"
       >
         <span class="cell-content">
-          <!-- Zeige den Inhalt des Feldes basierend auf seinem Zustand -->
-          <template v-if="cell.state === 'bomb'">💣</template>
-          <template v-else-if="cell.state === 'flag'">🚩</template>
-          <template v-else-if="cell.state === 'number'">{{ cell.value }}</template>
-          <template v-else>&nbsp;</template>
+          <!-- Dynamic cell content -->
+          <template v-if="cell.state === 'bomb'">
+            <img src="./assets/Mine.png" alt="💣" class="mine-icon" />
+          </template>
+          <template v-else-if="cell.state === 'flag'">
+            &#x1F6A9; <!-- Flag emoji -->
+          </template>
+          <template v-else-if="cell.state === 'empty'">
+            &nbsp; <!-- Empty space -->
+          </template>
+          <template v-else-if="cell.state === 'number'">
+            {{ cell.value }}
+          </template>
         </span>
       </div>
+    </div>
+
+    <!-- Game over message -->
+    <div v-if="gameState === 'Lost'" id="you-lost">
+      <img src="../../app/assets/you_lost.png" alt="You Lost" class="lost-image" />
     </div>
   </div>
 </template>
 
 <script>
+import { ref, onMounted, watch } from "vue";
+import axios from "axios";
+
 export default {
-  name: "GameBoard",
   props: {
-    cells: {
-      type: Array,
+    gameState: {
+      type: String,
       required: true,
     },
   },
-  methods: {
-    handleCellClick(row, col) {
-      this.$emit("cellClick", { row, col });
-    },
-    handleRightClick(row, col) {
-      this.$emit("cellFlag", { row, col });
-    },
+  name: "GameBoard",
+  setup(props, { emit }) {
+    const gameBoardData = ref({ rows: [], cols: 0, cells: [] });
+
+    watch(
+      () => props.gameState,
+      (newGameState) => {
+        console.log("Game state changed to:", newGameState);
+        // Perform actions based on the new game state
+        if (newGameState === "Lost" || newGameState === "Won") {
+          console.log("Game over. State:", newGameState);
+          // Add any other actions to handle these states
+        }
+      }
+    );
+
+    const buildGameBoard = async () => {
+      console.log("Building game board in single player mode");
+
+      try {
+        const response = await axios.post("http://localhost:9000/game/getGameBoard");
+        const data = response.data;
+        console.log("Game board data received from server");
+
+        gameBoardData.value = {
+          rows: data.cells,
+          cols: data.cols,
+          cells: data.cells,
+        };
+
+        console.log("Game State before displayBombs condition:", props.gameState);
+
+        if (props.gameState === "Lost" || props.gameState === "Won") {
+          console.log("Game over. State:", props.gameState);
+          await displayBombs();
+        }
+      } catch (error) {
+        console.error("Error fetching game board:", error);
+      }
+    };
+
+    const handleCellClick = (x, y) => {
+      console.log("Cell clicked at:", x, y);
+      uncoverCell(x, y);
+    };
+
+    const handleCellRightClick = (x, y) => {
+      console.log("Cell right-clicked at:", x, y);
+      flagCell(x, y);
+    };
+
+    const displayBombs = async () => {
+      try {
+        const response = await axios.post("http://localhost:9000/game/getBombMatrix");
+        const bombMatrix = response.data;
+        console.log("Bomb matrix received from server:", bombMatrix);
+
+        const updatedRows = gameBoardData.value.rows.map((row, y) =>
+          row.map((cell, x) => {
+            const cellContent = bombMatrix[x]?.[y];
+            return {
+              ...cell,
+              state: cellContent === "*" ? "bomb" : "revealed",
+              value: cellContent === "*" ? "💣" : cellContent,
+            };
+          })
+        );
+
+        gameBoardData.value = {
+          ...gameBoardData.value,
+          rows: updatedRows,
+        };
+      } catch (error) {
+        console.error("Error fetching bomb matrix:", error);
+        alert("Error fetching bomb matrix. Please check the server.");
+      }
+    };
+
+    const uncoverCell = (x, y) => {
+      const params = new URLSearchParams();
+      params.append('x', x);
+      params.append('y', y);
+
+      fetch("http://localhost:9000/game/uncover", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("successfully uncovered: ", x, ":", y);
+          emit('game-state-updated', data.gameState);
+        })
+        .catch(error => {
+          console.error('Error at uncovering cell:', error);
+          alert('Error at uncovering cell!');
+        });
+    };
+
+    const flagCell = (x, y) => {
+      const params = new URLSearchParams();
+      params.append('x', x);
+      params.append('y', y);
+
+      fetch("http://localhost:9000/game/flag", {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log("successfully flagged: ", x, ":", y);
+          emit('game-state-updated', data.gameState);
+        })
+        .catch(error => {
+          console.error('Error at flagging cell:', error);
+          alert('Error at flagging cell!');
+        });
+    };
+
+    onMounted(() => {
+      buildGameBoard();
+    });
+
+    return {
+      buildGameBoard,
+      gameBoardData,
+      handleCellClick,
+      handleCellRightClick,
+    };
   },
 };
 </script>
 
 <style scoped>
-.game-board {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+
+/* Game Board */
+#gameBoard {
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    max-width: 75vw;
+    max-height: 75vh;
+    margin-top: 2%;
+    margin-bottom: 2%;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 1vw;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.3);
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
+.mine-icon {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* Game Row */
 .game-row {
-  display: flex;
-  gap: 0.5rem;
+    display: flex;
 }
 
+/* Game Cell */
 .cell {
-  width: 30px;
-  height: 30px;
-  border: 1px solid #ccc;
-  background-color: #aaa;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
+    width: 2vw;
+    height: 2vw;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    vertical-align: middle;
+    cursor: pointer;
+    font-size: 2vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
-.cell.covered {
-  background-color: #ccc;
+.cell:hover {
+    transform: scale(1.05);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Chessboard Pattern */
+.cell.covered:nth-child(even) {
+    background-color: #2c3e50;
+}
+
+.cell.covered:nth-child(odd) {
+    background-color: #34495e;
+}
+
+/* Revealed Cells */
 .cell.revealed {
-  background-color: #e0e0e0;
+    background-color: #192b38 !important;
+    color: #2c3e50;
+    font-weight: bold;
 }
 
-.cell.bomb {
-  background-color: #f00;
-}
-
+/* Flagged Cells */
 .cell.flag {
-  background-color: #ff0;
+    background-color: #f1c40f !important;
 }
 
-.cell-content {
-  font-size: 1.2rem;
+/* Bomb Cells */
+.cell.bomb {
+    background-color: #ccc !important;
 }
+
+#you-lost img {
+    width: 100%;
+    max-width: 300px; /* Passe die maximale Breite nach Bedarf an */
+    margin: 0 auto;
+    filter: brightness(1) invert(0);
+    display: block;
+    pointer-events: none; /* Verhindert, dass das Bild die Spielfunktion beeinträchtigt */
+    ;
+
+}
+
+#you-lost {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100; /* Sicherstellen, dass es über anderen Elementen liegt */
+}
+
+.lost-image {
+    width: 100%;
+    max-width: 500px; /* Passe die maximale Breite nach Bedarf an */
+    display: block;
+    pointer-events: none; /* Verhindert, dass das Bild die Spielfunktion beeinträchtigt */
+    opacity: 1;
+}
+
+.lost-image.fade-out {
+    animation: fadeOut 2s forwards;
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+#gameBoard.vs-mode {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+#gameBoard.vs-mode .player-board {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#gameBoard.vs-mode .player-board h3 {
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+/* Anpassung der Zellengröße für Versus-Modus */
+#gameBoard.vs-mode .cell {
+    width: 30px;
+    height: 30px;
+    font-size: 16px;
+    /* Weitere Styles */
+}
+
+/* Responsives Design für kleinere Bildschirme */
+@media (max-width: 800px) {
+    #gameBoard.vs-mode .cell {
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+    }
+}
+
 </style>

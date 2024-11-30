@@ -1,7 +1,9 @@
 <template>
   <div>
     <Background />
-    <Navbar />
+    <Navbar
+      @return-to-Home="returnToHome"
+    />
 
     <div id="content" class="game">
       <!-- Modusauswahl -->
@@ -9,25 +11,24 @@
 
       <!-- Schwierigkeitsauswahl -->
       <DifficultySelection
-        v-if="modeSelected && !difficultySelected"
-        @difficultySelected="handleDifficultySelection"
+        v-if="modeSelected && !selectedDifficulty"
+        @selectedDifficulty="handleDifficultySelection"
       />
 
       <!-- Spielfeld -->
       <GameBoard
-        v-if="difficultySelected"
-        :cells="cells"
-        @cellClick="handleCellClick"
-        @cellFlag="handleCellFlag"
+        ref="gameBoard"
+        v-if="selectedDifficulty"
+        :gameState="gameState"
+        @game-state-updated="handleGameStateUpdate"
       />
 
       <!-- Spielsteuerung -->
       <GameControls
-        v-if="difficultySelected"
-        @undo="handleUndo"
-        @restart="handleRestart"
-        @save-game="handleSaveGame"
+        v-if="selectedDifficulty"
+        @reset-difficulty="resetDifficulty"
         @load-game="handleLoadGame"
+        @game-state-updated="handleGameStateUpdate"
       />
     </div>
   </div>
@@ -41,9 +42,6 @@ import DifficultySelection from '../components/game/DifficultySelection.vue';
 import GameBoard from '../components/game/GameBoard.vue';
 import GameControls from '../components/game/GameControls.vue';
 
-
-const backendUrl = 'http://localhost:9000';
-
 export default {
   components: {
     Background,
@@ -55,122 +53,30 @@ export default {
   },
   data() {
     return {
+      gameState: "Playing",
       modeSelected: null,
-      difficultySelected: null,
-      cells: [], // Initialisiere das Spielfeld
+      selectedDifficulty: null,
     };
   },
   methods: {
+    resetDifficulty() {
+      this.selectedDifficulty = null;
+    },
+    returnToHome() {
+      this.$emit('return-to-home');
+    },
     handleModeSelection(mode) {
       this.modeSelected = mode;
-      // Weitere Logik je nach Modus
     },
     handleDifficultySelection(difficulty) {
-      this.difficultySelected = difficulty;
-      this.initializeGameBoard(difficulty);
-    },
-    initializeGameBoard(difficulty) {
-      const params = new URLSearchParams();
-      params.append('level', difficulty);
-
-      fetch(`${backendUrl}/game/setDifficulty`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      })
-        .then(response => response.json())
-        .then(() => {
-          return fetch(`${backendUrl}/game/getGameBoard`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-          });
-        })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Spielbrettdaten:', data);
-          this.cells = data.cells;
-        })
-        .catch(error => {
-          console.error('Fehler beim Initialisieren des Spielfelds:', error);
-        });
-    },
-    handleCellClick({ row, col }) {
-      const params = new URLSearchParams();
-      params.append('x', row);
-      params.append('y', col);
-
-      fetch('/game/uncover', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      })
-        .then(response => response.json())
-        .then(data => {
-          this.cells = data.cells;
-        })
-        .catch(error => {
-          console.error('Fehler beim Aufdecken des Feldes:', error);
-        });
-    },
-    handleCellFlag({ row, col }) {
-      const params = new URLSearchParams();
-      params.append('x', row);
-      params.append('y', col);
-
-      fetch('/game/flag', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      })
-        .then(response => response.json())
-        .then(data => {
-          this.cells = data.cells;
-        })
-        .catch(error => {
-          console.error('Fehler beim Markieren des Feldes:', error);
-        });
-    },
-    handleUndo() {
-      fetch('/game/undo', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      })
-        .then(response => response.json())
-        .then(data => {
-          this.cells = data.cells;
-        })
-        .catch(error => {
-          console.error('Fehler beim Ausführen von Undo:', error);
-        });
-    },
-    handleRestart() {
-      fetch('/game/restart', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      })
-        .then(response => response.json())
-        .then(data => {
-          this.cells = data.cells;
-        })
-        .catch(error => {
-          console.error('Fehler beim Neustart des Spiels:', error);
-        });
-    },
-    handleSaveGame() {
-      fetch('/game/save', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Spiel erfolgreich gespeichert');
-        })
-        .catch(error => {
-          console.error('Fehler beim Speichern des Spiels:', error);
-        });
+      this.selectedDifficulty = difficulty;
     },
     handleLoadGame() {
-      // Implementieren Sie die Ladefunktion entsprechend Ihren Anforderungen
+      this.$emit('load-game');
+    },
+    async handleGameStateUpdate(newGameState) {
+      this.gameState = newGameState;
+      this.$refs.gameBoard.buildGameBoard();
     },
   },
 };

@@ -2,7 +2,9 @@
   <div>
     <Header />
     <GamesList />
-    <Footer />
+    <Footer
+        @start-new-game="startNewGame"
+    />
   </div>
 </template>
 
@@ -18,6 +20,12 @@ export default {
     GamesList,
     Footer,
   },
+
+  methods: {
+    startNewGame() {
+      this.$emit('start-new-game');
+    }
+  }
 };
 </script>
 

@@ -11,13 +11,64 @@
 export default {
   methods: {
     undo() {
-      this.$emit('undo'); // Event für "Undo" auslösen
+      const params = new URLSearchParams();
+
+      fetch('http://localhost:9000/game/undo', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(), // Empty params for the undo action
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Undo successful');
+          this.$emit('game-state-updated', data.gameState);
+        })
+        .catch(error => {
+          console.error('Error undoing:', error);
+          alert('Error undoing. Please check the server response.');
+        });
     },
     restart() {
-      this.$emit('restart'); // Event für "Restart" auslösen
+      console.log("Restart action triggered");
+      // Send a POST request to restart the game
+      const params = new URLSearchParams();
+
+      fetch('http://localhost:9000/game/restart', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: params.toString(), // Empty params for the restart action
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Restart successful');
+          this.$emit('reset-difficulty');
+          this.$emit('game-state-updated', data.gameState);
+        })
+        .catch(error => {
+          console.error('Error restarting:', error);
+          alert('Error restarting. Please check the server response.');
+        });
     },
     saveGame() {
-      this.$emit('save-game'); // Event für "Save Game" auslösen
+      console.log("Save game action triggered");
+
+      // Send AJAX request to save the game
+      fetch('http://localhost:9000/game/save', {
+        method: 'POST',
+      })
+        .then(response => response.json())
+        .then(data => {
+          console.log('Save game successful');
+          this.$emit('game-state-updated', data.gameState);
+        })
+        .catch(error => {
+          console.error('Error saving game:', error);
+          alert('Error saving game. Please check the server response.');
+        });
     },
     loadGame() {
       this.$emit('load-game'); // Event für "Load Game" auslösen

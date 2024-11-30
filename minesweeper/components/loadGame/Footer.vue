@@ -1,7 +1,10 @@
 <template>
   <footer class="text-center my-5">
     <h1>
-      <button id="start-game-btn" class="btn start-game-button" @click="startNewGame">
+      <button
+        id="start-game-btn"
+        class="btn start-game-button"
+        @click="startNewGame">
         Start New Game
       </button>
     </h1>
@@ -9,22 +12,10 @@
 </template>
 
 <script>
-import axios from "axios";
-
 export default {
-  name: "FooterComponent",
   methods: {
     startNewGame() {
-      axios
-        .post("http://localhost:9000/game")
-        .then((response) => {
-          document.head.innerHTML = response.data.head;
-          document.body.innerHTML = response.data.body;
-        })
-        .catch((error) => {
-          console.log("Error:", error);
-          alert("Something went wrong! Please try again.");
-        });
+      this.$emit('start-new-game');
     },
   },
 };

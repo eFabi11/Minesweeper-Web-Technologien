@@ -1,7 +1,12 @@
 <template>
   <div id="start-game">
     <h1 class="my-4">
-      <button id="start-game-btn" class="btn start-game-button" @click="startGame">Start Game</button>
+      <button
+        id="start-game-btn"
+        class="btn start-game-button"
+        @click="startGame">
+        Start Game
+      </button>
     </h1>
   </div>
 </template>
@@ -10,7 +15,7 @@
 export default {
   methods: {
     startGame() {
-      this.$emit('start-game'); // Emit event to the parent to replace components
+      this.$emit('start-game');
     },
   },
 };

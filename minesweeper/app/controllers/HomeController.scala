@@ -93,9 +93,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
     gameController.restart()
     val diff = request.body.asFormUrlEncoded.get("level").head.toString
     val selectedStrategy: DifficultyStrategy = diff match {
-      case "E" => new EasyDifficulty
-      case "M" => new MediumDifficulty
-      case "H" => new HardDifficulty
+      case "E" | "easy" => new EasyDifficulty
+      case "M" | "medium" => new MediumDifficulty
+      case "H" | "hard" => new HardDifficulty
       case _ =>
         println("Invalid input, defaulting to Easy")
         new EasyDifficulty

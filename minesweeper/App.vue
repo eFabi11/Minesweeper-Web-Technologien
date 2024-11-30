@@ -1,47 +1,53 @@
 <template>
   <div :style="{ backgroundColor: '#f5f5f5' }">
-    <Background />
-    <Navbar />
     <div id="content">
       <Homepage
+        ref="homepage"
         v-if="currentScreen === 'home'"
         @start-game="startGame"
-        @load-game="loadGame"
       />
-      <GameScreen v-else-if="currentScreen === 'game'" :mode="selectedMode" />
-      <LoadGameScreen v-else-if="currentScreen === 'loadGame'" />
+      <GameScreen
+        v-else-if="currentScreen === 'game'"
+        @load-game="loadGame"
+        @return-to-home="returnToHome"
+      />
+      <LoadGameScreen
+        v-else-if="currentScreen === 'loadGame'"
+        @start-new-game="startNewGame"
+      />
     </div>
   </div>
 </template>
 
 <script>
-import Background from './components/game/Background.vue';
-import Navbar from './components/game/Navbar.vue';
 import Homepage from './views/HomepageScreen.vue';
 import GameScreen from './views/GameScreen.vue';
 import LoadGameScreen from './views/LoadGameScreen.vue';
 
 export default {
   components: {
-    Background,
-    Navbar,
     Homepage,
     GameScreen,
     LoadGameScreen,
   },
   data() {
     return {
-      currentScreen: 'home', // Mögliche Werte: 'home', 'game', 'loadGame'
-      selectedMode: null,
+      currentScreen: 'home', // Mögliche Werte: 'home', 'game', 'loadGame',
     };
   },
   methods: {
+    returnToHome() {
+      this.currentScreen = 'home';
+    },
     startGame(mode) {
-      this.selectedMode = mode;
+      this.$refs.homepage.removeEventlisteners();
       this.currentScreen = 'game';
     },
     loadGame() {
       this.currentScreen = 'loadGame';
+    },
+    startNewGame() {
+      this.currentScreen = 'game';
     },
   },
 };
@@ -54,11 +60,7 @@ export default {
   z-index: 1;
   display: flex;
   flex-direction: column;
-  align-items: center;
   justify-content: center;
-  height: 100vh;
-  width: 100vw;
-  padding: 2vw;
   overflow: auto;
   font-family: 'Poppins', sans-serif;
 }

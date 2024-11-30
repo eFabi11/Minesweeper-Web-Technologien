@@ -10,7 +10,6 @@ var playerId;
 var isFirstPlayer = false;
 var players = [];
 
-
 //-------------------- Event Listeners --------------------
 
 // Load game button
@@ -303,10 +302,6 @@ function setDifficulty(level) {
     }
 }
 
-
-
-
-
 function uncoverCell(x, y) {
     console.log("Uncover cell at:", x, y);
     if (isCoopMode) {
@@ -439,7 +434,6 @@ function restart() {
     }
 }
 
-
 // Function to handle the save game event
 function saveGame() {
     console.log("Save game action triggered");
@@ -458,6 +452,7 @@ function saveGame() {
         });
     }
 }
+
 function updateVoteStatus(votes) {
     console.log("Votes received:", votes);
     $('#votesEasy').text(votes["E"] || 0);
@@ -465,7 +460,6 @@ function updateVoteStatus(votes) {
     $('#votesHard').text(votes["H"] || 0);
     $('#voteSummary').show();
 }
-
 
 function updateVoteSummary(difficultyCounts) {
     console.log("Updating vote summary:", difficultyCounts);
@@ -479,8 +473,6 @@ function updateVoteSummary(difficultyCounts) {
     $('#voteSummary').show();
 }
 
-
-
 function renderPlayerList(players) {
     var playersContainer = $('#playersContainer');
     playersContainer.empty();
@@ -489,8 +481,6 @@ function renderPlayerList(players) {
     });
     playersContainer.append('<div class="player-count">Spieler: ' + players.length + ' / 4</div>');
 }
-
-
 
 function connectVsWebSocket() {
     if (vsSocket && vsSocket.readyState === WebSocket.OPEN) {
@@ -506,8 +496,6 @@ function connectVsWebSocket() {
     vsSocket.onopen = function () {
         console.log("Versus WebSocket connected.");
     };
-
-    
 
     vsSocket.onmessage = function (event) {
     const data = JSON.parse(event.data);
@@ -558,7 +546,6 @@ function connectVsWebSocket() {
                 console.warn("Unbekannte Aktion:", data.action);
         }
     };
-    
 
     vsSocket.onerror = function (error) {
         console.error("WebSocket error:", error);

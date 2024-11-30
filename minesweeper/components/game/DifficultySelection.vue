@@ -1,18 +1,41 @@
 <template>
   <div class="difficulty-selection">
-    <button class="btn-custom" @click="selectDifficulty('easy')">Easy</button>
-    <button class="btn-custom" @click="selectDifficulty('medium')">Medium</button>
-    <button class="btn-custom" @click="selectDifficulty('hard')">Hard</button>
+    <button class="btn-custom" @click="setDifficulty('easy')">Easy</button>
+    <button class="btn-custom" @click="setDifficulty('medium')">Medium</button>
+    <button class="btn-custom" @click="setDifficulty('hard')">Hard</button>
   </div>
 </template>
 
 <script>
+import axios from 'axios';  // Import axios
+
+const backendUrl = 'http://localhost:9000';
+
 export default {
   methods: {
-    selectDifficulty(level) {
-      this.$emit("difficultySelected", level); // Emit the selected difficulty to the parent component
-    },
-  },
+    setDifficulty(diff) {
+      console.log("Setting difficulty level to:", diff);
+
+      // Create URLSearchParams to send as URL-encoded data
+      const params = new URLSearchParams();
+      params.append('level', diff);
+
+      // Use fetch to send a POST request to set the difficulty
+      fetch(`${backendUrl}/game/setDifficulty`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: params.toString(),
+      })
+        .then(response => response.json())
+        .then(data => {
+          this.$emit("selectedDifficulty", diff);
+        })
+        .catch(error => {
+          console.error('Error setting difficulty:', error);
+          alert('Fehler beim Festlegen des Schwierigkeitsgrads. Bitte versuchen Sie es erneut.');
+        });
+    }
+  }
 };
 </script>
 

@@ -77,7 +77,6 @@ export default {
   },
   methods: {
     startGame() {
-      // Update state to remove all other components and load gameGui
       this.$emit('start-game');
     },
     handleScroll() {
@@ -118,6 +117,11 @@ export default {
     onLoad() {
       // This ensures the header starts with the correct style
       document.getElementById("header-scroll").classList.remove("small");
+    },
+    removeEventlisteners() {
+      // Clean up event listeners when the component is destroyed
+      window.removeEventListener('scroll', this.handleScroll);
+      window.removeEventListener('load', this.onLoad);
     }
   }
 };

@@ -1,10 +1,20 @@
 <template>
     <header>
         <nav id="top-nav">
-            <a id="logo">Minesweeper</a>
+            <a id="logo" @click="returnToHome">Minesweeper</a>
         </nav>
     </header>
 </template>
+
+<script>
+export default {
+  methods: {
+    returnToHome() {
+      this.$emit('return-to-home');
+    },
+  },
+};
+</script>
 
 <style scoped>
 
