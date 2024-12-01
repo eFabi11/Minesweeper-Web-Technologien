@@ -84,7 +84,7 @@ export default {
           () => props.coopBoardData,
           (data) => {
             gameBoardData.value = {
-              rows: data.rows,
+              rows: data.cells,
               cols: data.cols,
               cells: data.cells,
             };
@@ -103,7 +103,7 @@ export default {
           console.log("Game board data received from server");
 
           gameBoardData.value = {
-            rows: data.rows,
+            rows: data.cells,
             cols: data.cols,
             cells: data.cells,
           };
