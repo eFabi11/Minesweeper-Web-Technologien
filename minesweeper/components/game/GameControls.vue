@@ -9,49 +9,68 @@
 
 <script>
 export default {
+  props: {
+    mode: {
+      type: String,
+      required: true,
+    },
+  },
   methods: {
     undo() {
-      const params = new URLSearchParams();
+      if (this.mode === "coop") {
+        this.$emit("send-coop-control", "undo");
+      } else if (this.mode === "versus") {
 
-      fetch('http://localhost:9000/game/undo', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(), // Empty params for the undo action
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Undo successful');
-          this.$emit('game-state-updated', data.gameState);
+      } else if (this.mode === "single") {
+        const params = new URLSearchParams();
+
+        fetch('http://localhost:9000/game/undo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params.toString(), // Empty params for the undo action
         })
-        .catch(error => {
-          console.error('Error undoing:', error);
-          alert('Error undoing. Please check the server response.');
-        });
+          .then(response => response.json())
+          .then(data => {
+            console.log('Undo successful');
+            this.$emit('game-state-updated', data.gameState);
+          })
+          .catch(error => {
+            console.error('Error undoing:', error);
+            alert('Error undoing. Please check the server response.');
+          });
+      }
     },
     restart() {
-      console.log("Restart action triggered");
-      // Send a POST request to restart the game
-      const params = new URLSearchParams();
 
-      fetch('http://localhost:9000/game/restart', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: params.toString(), // Empty params for the restart action
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log('Restart successful');
-          this.$emit('reset-difficulty');
-          this.$emit('game-state-updated', data.gameState);
+      if (this.mode === "coop") {
+        this.$emit("send-coop-control", "restart");
+      } else if (this.mode === "versus") {
+
+      } else if (this.mode === "single") {
+        console.log("Restart action triggered");
+        // Send a POST request to restart the game
+        const params = new URLSearchParams();
+
+        fetch('http://localhost:9000/game/restart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+          },
+          body: params.toString(), // Empty params for the restart action
         })
-        .catch(error => {
-          console.error('Error restarting:', error);
-          alert('Error restarting. Please check the server response.');
-        });
+          .then(response => response.json())
+          .then(data => {
+            console.log('Restart successful');
+            this.$emit('reset-difficulty');
+            this.$emit('game-state-updated', data.gameState);
+          })
+          .catch(error => {
+            console.error('Error restarting:', error);
+            alert('Error restarting. Please check the server response.');
+          });
+      }
     },
     saveGame() {
       console.log("Save game action triggered");

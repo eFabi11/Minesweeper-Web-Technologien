@@ -24,11 +24,14 @@
         :mode="modeSelected"
         :coopBoardData="coopBoardData"
         @game-state-updated="handleGameStateUpdate"
+        @send-coop-action="handleCoopAction"
       />
 
       <!-- Spielsteuerung -->
       <GameControls
         v-if="selectedDifficulty"
+        :mode="modeSelected"
+        @send-coop-control="handleCoopControl"
         @reset-difficulty="resetDifficulty"
         @load-game="handleLoadGame"
         @game-state-updated="handleGameStateUpdate"
@@ -67,7 +70,7 @@ export default {
       gameState: "Playing",
       modeSelected: null,
       selectedDifficulty: null,
-      coopBoardData: null,
+      coopBoardData: "",
     };
   },
   methods: {
@@ -99,14 +102,24 @@ export default {
     handleLoadGame() {
       this.$emit('load-game');
     },
-    async handleGameStateUpdate(newGameState) {
+    handleGameStateUpdate(newGameState) {
       this.gameState = newGameState;
-      this.$refs.gameBoard.buildGameBoard();
+      this.handleRebuildGameBoard();
     },
     buildCoopGameBoards(data) {
       this.coopBoardData = data;
-      console.log("Received coop board data:", this.coopBoardData);
+      this.gameState = data.gameState;
+      console.log("coopBoardData on GameScreen: ", this.coopBoardData.type);
+      this.handleRebuildGameBoard();
+    },
+    async handleRebuildGameBoard() {
       this.$refs.gameBoard.buildGameBoard();
+    },
+    handleCoopAction(action, x, y) {
+      this.$refs.socket.sendCoopAction(action, { x: x, y: y });
+    },
+    handleCoopControl(action) {
+      this.$refs.socket.sendCoopAction(action, {});
     },
   },
 };

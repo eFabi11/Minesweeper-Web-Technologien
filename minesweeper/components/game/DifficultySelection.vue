@@ -1,8 +1,8 @@
 <template>
   <div class="difficulty-selection">
-    <button class="btn-custom" @click="setDifficulty('easy')">Easy</button>
-    <button class="btn-custom" @click="setDifficulty('medium')">Medium</button>
-    <button class="btn-custom" @click="setDifficulty('hard')">Hard</button>
+    <button class="btn-custom" @click="setDifficulty('E')">Easy</button>
+    <button class="btn-custom" @click="setDifficulty('M')">Medium</button>
+    <button class="btn-custom" @click="setDifficulty('H')">Hard</button>
   </div>
 </template>
 

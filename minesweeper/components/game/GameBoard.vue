@@ -79,7 +79,7 @@ export default {
       console.log("Building game board in ", props.mode, " mode");
 
       if (props.mode === "coop") {
-        console.log("Build GameBoard for Coop mode");
+
         watch(
           () => props.coopBoardData,
           (data) => {
@@ -90,6 +90,7 @@ export default {
             };
           }
         );
+        console.log("Build GameBoard for Coop mode with: ", props.coopBoardData);
       }
 
       if (props.mode === "versus") {
@@ -158,45 +159,59 @@ export default {
     };
 
     const uncoverCell = (x, y) => {
-      const params = new URLSearchParams();
-      params.append('x', x);
-      params.append('y', y);
 
-      fetch("http://localhost:9000/game/uncover", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("successfully uncovered: ", x, ":", y);
-          emit('game-state-updated', data.gameState);
+      if (props.mode === "coop") {
+        emit("send-coop-action", "uncover", x, y);
+      } else if (props.mode === "versus") {
+
+      } else if (props.mode === "single") {
+        const params = new URLSearchParams();
+        params.append('x', x);
+        params.append('y', y);
+
+        fetch("http://localhost:9000/game/uncover", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
         })
-        .catch(error => {
-          console.error('Error at uncovering cell:', error);
-          alert('Error at uncovering cell!');
-        });
+          .then(response => response.json())
+          .then(data => {
+            console.log("successfully uncovered: ", x, ":", y);
+            emit('game-state-updated', data.gameState);
+          })
+          .catch(error => {
+            console.error('Error at uncovering cell:', error);
+            alert('Error at uncovering cell!');
+          });
+      }
     };
 
     const flagCell = (x, y) => {
-      const params = new URLSearchParams();
-      params.append('x', x);
-      params.append('y', y);
 
-      fetch("http://localhost:9000/game/flag", {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: params.toString(),
-      })
-        .then(response => response.json())
-        .then(data => {
-          console.log("successfully flagged: ", x, ":", y);
-          emit('game-state-updated', data.gameState);
+      if (props.mode === "coop") {
+        emit("send-coop-action", "flag", x, y);
+      } else if (props.mode === "versus") {
+
+      } else if (props.mode === "single") {
+        const params = new URLSearchParams();
+        params.append('x', x);
+        params.append('y', y);
+
+        fetch("http://localhost:9000/game/flag", {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: params.toString(),
         })
-        .catch(error => {
-          console.error('Error at flagging cell:', error);
-          alert('Error at flagging cell!');
-        });
+          .then(response => response.json())
+          .then(data => {
+            console.log("successfully flagged: ", x, ":", y);
+            emit('game-state-updated', data.gameState);
+          })
+          .catch(error => {
+            console.error('Error at flagging cell:', error);
+            alert('Error at flagging cell!');
+          });
+      }
     };
 
     onMounted(() => {

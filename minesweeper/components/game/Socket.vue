@@ -31,7 +31,7 @@ export default {
       };
 
       this.coopSocket.onmessage = (event) => {
-        console.log("Message received from WebSocket:", event.data);
+        console.log("Recieved message from WebSocket:", event.data);
         const data = JSON.parse(event.data);
         if (data.gameState) {
           console.log("Game state received:", data.gameState);
