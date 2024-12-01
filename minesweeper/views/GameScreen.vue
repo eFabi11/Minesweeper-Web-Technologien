@@ -7,7 +7,10 @@
 
     <div id="content" class="game">
       <!-- Modusauswahl -->
-      <ModeSelection v-if="!modeSelected" @modeSelected="handleModeSelection" />
+      <ModeSelection
+        v-if="!modeSelected"
+        @modeSelected="handleModeSelection"
+      />
 
       <!-- Schwierigkeitsauswahl -->
       <DifficultySelection
@@ -25,6 +28,7 @@
         :coopBoardData="coopBoardData"
         @game-state-updated="handleGameStateUpdate"
         @send-coop-action="handleCoopAction"
+        @send-vs-action="handleVsAction"
       />
 
       <!-- Spielsteuerung -->
@@ -86,15 +90,17 @@ export default {
       if (mode === 'coop') {
         this.$refs.socket.connectCoopWebSocket();
       }
+      if (mode === 'versus') {
+        this.$refs.socket.connectVsWebSocket();
+      }
     },
     handleDifficultySelection(difficulty, mode) {
       switch (mode) {
         case 'coop':
-          console.log("Setting difficulty level to:", difficulty);
           this.$refs.socket.sendCoopAction('setDifficulty', { level: difficulty});
           break;
         case 'versus':
-
+          this.$refs.socket.sendVsAction('setDifficulty', { level: difficulty});
           break;
       }
       this.selectedDifficulty = difficulty;
@@ -120,6 +126,9 @@ export default {
     },
     handleCoopControl(action) {
       this.$refs.socket.sendCoopAction(action, {});
+    },
+    handleVsAction(action, x, y) {
+      this.$refs.socket.sendVsAction(action, { x: x, y: y });
     },
   },
 };

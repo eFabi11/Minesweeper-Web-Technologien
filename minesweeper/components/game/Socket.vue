@@ -65,12 +65,15 @@ export default {
 
     // Connect to Versus WebSocket
     connectVsWebSocket() {
+        this.gameID = prompt("Enter a game ID to join or create a new game:", "vs_" + Date.now());
+        this.playerId = prompt("Enter your player name:", "Player_" + Date.now());
+
       if (this.vsSocket && this.vsSocket.readyState === WebSocket.OPEN) {
         console.log("Closing existing WebSocket connection...");
         this.vsSocket.close();
       }
 
-      const socketUrl = `ws://${window.location.host}/vs/ws/${this.gameID}/${this.playerId}`;
+      const socketUrl = `ws://localhost:9000/vs/ws/${this.gameID}/${this.playerId}`;
       console.log("Connecting to Versus WebSocket at URL:", socketUrl);
 
       this.vsSocket = new WebSocket(socketUrl);

@@ -163,7 +163,7 @@ export default {
       if (props.mode === "coop") {
         emit("send-coop-action", "uncover", x, y);
       } else if (props.mode === "versus") {
-
+        emit("send-versus-action", "uncover", x, y);
       } else if (props.mode === "single") {
         const params = new URLSearchParams();
         params.append('x', x);
@@ -191,7 +191,7 @@ export default {
       if (props.mode === "coop") {
         emit("send-coop-action", "flag", x, y);
       } else if (props.mode === "versus") {
-
+        emit("send-versus-action", "flag", x, y);
       } else if (props.mode === "single") {
         const params = new URLSearchParams();
         params.append('x', x);

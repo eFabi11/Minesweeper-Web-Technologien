@@ -19,8 +19,6 @@ export default {
     undo() {
       if (this.mode === "coop") {
         this.$emit("send-coop-control", "undo");
-      } else if (this.mode === "versus") {
-
       } else if (this.mode === "single") {
         const params = new URLSearchParams();
 
@@ -46,8 +44,6 @@ export default {
 
       if (this.mode === "coop") {
         this.$emit("send-coop-control", "restart");
-      } else if (this.mode === "versus") {
-
       } else if (this.mode === "single") {
         console.log("Restart action triggered");
         // Send a POST request to restart the game
