@@ -168,6 +168,7 @@ export default {
     // Aufbau der Spielbretter für alle Spieler
     buildVsGameBoards(gameStates) {
       // Emitieren der Spielbretter an das Eltern-Component
+      console.log("Emitieren der Spielbretter an das Eltern-Component:", gameStates);
       this.$emit('buildVsGameBoards', gameStates, this.playerId);
     },
 

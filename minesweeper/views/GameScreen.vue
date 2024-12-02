@@ -129,11 +129,6 @@ export default {
       this.gameState = data.gameState;
       console.log("coopBoardData on GameScreen: ", this.coopBoardData.type);
 
-      // Stellen Sie sicher, dass selectedDifficulty gesetzt ist
-      if (!this.selectedDifficulty) {
-        this.selectedDifficulty = 'default'; // Oder setzen Sie es auf den tatsächlichen Schwierigkeitsgrad
-      }
-
       this.handleRebuildGameBoard();
     },
     buildVsGameBoards(gameStates, playerId) {
@@ -144,8 +139,6 @@ export default {
     async handleRebuildGameBoard() {
       if (this.$refs.gameBoard) {
         this.$refs.gameBoard.buildGameBoard();
-      } else {
-        console.warn("GameBoard-Komponente ist nicht verfügbar.");
       }
     },
     handleCoopAction(action, x, y) {
