@@ -162,6 +162,7 @@ export default {
     // Aktualisieren des Spielzustands für Versus-Modus
     updateVsGameState(data) {
       console.log("Aktualisieren des Spielzustands:", data);
+      console.log("Empfangene gameStates:", data.gameStates); // Fügen Sie dies hinzu
       this.buildVsGameBoards(data.gameStates);
     },
 
