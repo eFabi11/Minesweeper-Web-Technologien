@@ -1,5 +1,5 @@
 <template>
-    <div></div>
+  <div></div>
 </template>
 
 <script>
@@ -18,90 +18,103 @@ export default {
     };
   },
   methods: {
-    // Connect to Coop WebSocket
+    // Verbindung zum Coop WebSocket herstellen
     connectCoopWebSocket() {
-      this.gameID = prompt("Enter a game ID to join or create a new game:", "game_" + Date.now());
+      this.gameID = prompt("Geben Sie eine Spiel-ID ein, um einem Spiel beizutreten oder ein neues Spiel zu erstellen:", "game_" + Date.now());
 
       const socketUrl = `ws://localhost:9000/coop/ws/${this.gameID}`;
-      console.log("Connecting to WebSocket at URL:", socketUrl);
+      console.log("Verbindung zum WebSocket unter URL herstellen:", socketUrl);
       this.coopSocket = new WebSocket(socketUrl);
 
       this.coopSocket.onopen = () => {
-        console.log("Coop WebSocket connected.");
+        console.log("Coop WebSocket verbunden.");
       };
 
       this.coopSocket.onmessage = (event) => {
-        console.log("Recieved message from WebSocket:", event.data);
+        console.log("Nachricht vom WebSocket erhalten:", event.data);
         const data = JSON.parse(event.data);
         if (data.gameState) {
-          console.log("Game state received:", data.gameState);
+          console.log("Spielzustand erhalten:", data.gameState);
           this.$emit("build-coop-game-boards", data);
         }
       };
 
       this.coopSocket.onclose = () => {
-        console.log("Coop WebSocket closed.");
+        console.log("Coop WebSocket geschlossen.");
       };
 
       this.coopSocket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.error("WebSocket-Fehler:", error);
       };
     },
 
-    // Send actions to Coop WebSocket
+    // Aktionen an Coop WebSocket senden
     sendCoopAction(action, data) {
-      console.log("Sending action via WebSocket:", action, data);
+      console.log("Senden von Aktion über WebSocket:", action, data);
       if (this.coopSocket && this.coopSocket.readyState === WebSocket.OPEN) {
         const message = {
           action: action,
           data: data
         };
         this.coopSocket.send(JSON.stringify(message));
-        console.log("Action sent:", message);
+        console.log("Aktion gesendet:", message);
       } else {
-        console.warn("WebSocket is not open. Ready state:", this.coopSocket.readyState);
+        console.warn("WebSocket ist nicht geöffnet. Bereitschaftszustand:", this.coopSocket.readyState);
       }
     },
 
-    // Connect to Versus WebSocket
+    // Verbindung zum Versus WebSocket herstellen
     connectVsWebSocket() {
-        this.gameID = prompt("Enter a game ID to join or create a new game:", "vs_" + Date.now());
-        this.playerId = prompt("Enter your player name:", "Player_" + Date.now());
+      this.gameID = prompt("Geben Sie eine Spiel-ID ein, um einem Spiel beizutreten oder ein neues Spiel zu erstellen:", "vs_" + Date.now());
+      this.playerId = prompt("Geben Sie Ihren Spielernamen ein:", "Player_" + Date.now());
 
       if (this.vsSocket && this.vsSocket.readyState === WebSocket.OPEN) {
-        console.log("Closing existing WebSocket connection...");
+        console.log("Bestehende WebSocket-Verbindung wird geschlossen...");
         this.vsSocket.close();
       }
 
       const socketUrl = `ws://localhost:9000/vs/ws/${this.gameID}/${this.playerId}`;
-      console.log("Connecting to Versus WebSocket at URL:", socketUrl);
+      console.log("Verbindung zum Versus WebSocket unter URL herstellen:", socketUrl);
 
       this.vsSocket = new WebSocket(socketUrl);
 
       this.vsSocket.onopen = () => {
-        console.log("Versus WebSocket connected.");
+        console.log("Versus WebSocket verbunden.");
       };
 
       this.vsSocket.onmessage = (event) => {
         const data = JSON.parse(event.data);
-        console.log("Received message:", data);
+        console.log("Empfangene Nachricht:", data);
 
         switch (data.action) {
           case "setDifficulty":
             if (data.players) {
               this.players = data.players;
               this.isFirstPlayer = (this.playerId === this.players[0]);
-              console.log("Player list updated in 'setDifficulty':", this.players);
+              console.log("Spielerliste aktualisiert in 'setDifficulty':", this.players);
               console.log("isFirstPlayer:", this.isFirstPlayer);
+              // Emitieren des ersten Spielerstatus
+              this.$emit('updateFirstPlayerStatus', this.isFirstPlayer);
+            }
+            if (data.level) {
+              // Emitieren des Schwierigkeitsgrades
+              this.$emit('difficultySet', data.level);
             }
             break;
 
           case "updatePlayers":
             this.players = data.players;
             this.isFirstPlayer = (this.playerId === this.players[0]);
-            console.log("Player list updated in 'updatePlayers':", this.players);
+            console.log("Spielerliste aktualisiert in 'updatePlayers':", this.players);
             console.log("isFirstPlayer:", this.isFirstPlayer);
-            this.renderPlayerList(this.players);
+            // Emitieren des ersten Spielerstatus
+            this.$emit('updateFirstPlayerStatus', this.isFirstPlayer);
+            // Aktualisieren der Spielerliste
+            this.$emit('playerListUpdated', this.players);
+            break;
+
+          case "startGame":
+            this.handleStartGame(data);
             break;
 
           case "gameState":
@@ -109,30 +122,30 @@ export default {
             break;
 
           case "error":
-            alert(data.message || "An error occurred.");
+            alert(data.message || "Ein Fehler ist aufgetreten.");
             break;
 
           case "gameFull":
-            alert("The game is full!");
+            alert("Das Spiel ist voll!");
             break;
 
           default:
-            console.warn("Unknown action:", data.action);
+            console.warn("Unbekannte Aktion:", data.action);
         }
       };
 
       this.vsSocket.onerror = (error) => {
-        console.error("WebSocket error:", error);
+        console.error("WebSocket-Fehler:", error);
       };
 
       this.vsSocket.onclose = () => {
-        console.log("Versus WebSocket closed.");
+        console.log("Versus WebSocket geschlossen.");
       };
     },
 
-    // Send actions to Versus WebSocket
+    // Aktionen an Versus WebSocket senden
     sendVsAction(action, data) {
-      console.log("Sending Versus action via WebSocket:", action, data);
+      console.log("Senden von Versus-Aktion über WebSocket:", action, data);
       if (this.vsSocket && this.vsSocket.readyState === WebSocket.OPEN) {
         const message = {
           action: action,
@@ -140,131 +153,51 @@ export default {
           playerId: this.playerId
         };
         this.vsSocket.send(JSON.stringify(message));
-        console.log("Versus action sent:", message);
+        console.log("Versus-Aktion gesendet:", message);
       } else {
-        console.warn("Versus WebSocket is not open. Ready state:", this.vsSocket.readyState);
+        console.warn("Versus WebSocket ist nicht geöffnet. Bereitschaftszustand:", this.vsSocket.readyState);
       }
     },
 
-    // Update the game state for Versus mode
+    // Aktualisieren des Spielzustands für Versus-Modus
     updateVsGameState(data) {
-      console.log("Updating game state:", data);
+      console.log("Aktualisieren des Spielzustands:", data);
       this.buildVsGameBoards(data.gameStates);
     },
 
-    // Render the player list
-    renderPlayerList(players) {
-      // Assuming this is a DOM element for player list rendering
-      const playersContainer = document.getElementById('playersContainer');
-      playersContainer.innerHTML = '';
-      players.forEach((player) => {
-        playersContainer.innerHTML += `<div class="player-item">${player}</div>`;
-      });
-      playersContainer.innerHTML += `<div class="player-count">Players: ${players.length} / 4</div>`;
-    },
-
-    // Build the game boards for all players
+    // Aufbau der Spielbretter für alle Spieler
     buildVsGameBoards(gameStates) {
-      const gameBoard = document.getElementById('gameBoard');
-      console.log("Building game boards for all players");
-
-      gameBoard.classList.add('vs-mode');
-      gameBoard.innerHTML = ''; // Clear the game area
-
-      gameStates.forEach(state => {
-        const playerName = state.playerId;
-        const gameData = state.gameData;
-
-        let boardHtml = `<div class="player-board" id="board-${playerName}">`;
-        boardHtml += `<h3>${playerName}</h3>`;
-        boardHtml += this.buildGameBoardHtml(gameData, playerName);
-        boardHtml += `</div>`;
-
-        gameBoard.innerHTML += boardHtml;
-      });
-
-      // Enable interactions only for the current player's game board
-      document.querySelectorAll(`.cell[data-player="${this.playerId}"]`).forEach(cell => {
-        cell.addEventListener('click', (e) => {
-          const x = e.target.dataset.x;
-          const y = e.target.dataset.y;
-          console.log("Cell clicked at:", x, y);
-          this.uncoverCell(x, y);
-        });
-        cell.addEventListener('contextmenu', (e) => {
-          e.preventDefault();
-          const x = e.target.dataset.x;
-          const y = e.target.dataset.y;
-          console.log("Cell right-clicked at:", x, y);
-          this.flagCell(x, y);
-        });
-      });
+      // Emitieren der Spielbretter an das Eltern-Component
+      this.$emit('buildVsGameBoards', gameStates, this.playerId);
     },
 
-    // Generate the game board HTML for a player
-    buildGameBoardHtml(data, playerName) {
-      const { rows, cols, cells } = data;
-      let boardHtml = '<div class="gameBoard">';
-      for (let row = 0; row < rows; row++) {
-        boardHtml += '<div class="game-row">';
-        for (let col = 0; col < cols; col++) {
-          const cellValue = cells[row][col];
-          let cellClasses = 'cell';
-          let cellContent = '';
-          switch (cellValue) {
-            case '-':
-              cellClasses += ' covered';
-              break;
-            case 'f':
-              cellClasses += ' flag';
-              cellContent = '&#x1F6A9;';
-              break;
-            case '*':
-              cellClasses += ' bomb';
-              cellContent = '<img src="/assets/Mine.png" alt="Mine" class="mine-icon">';
-              break;
-            case ' ':
-            case '0':
-              cellClasses += ' empty';
-              cellContent = '&nbsp;';
-              break;
-            case '1':
-            case '2':
-            case '3':
-            case '4':
-            case '5':
-            case '6':
-            case '7':
-            case '8':
-              cellClasses += ' number';
-              cellContent = cellValue;
-              break;
-            default:
-              cellClasses += ' unknown';
-              break;
-          }
-          if (playerName === this.playerId) {
-            cellClasses += ' own-cell';
-          }
-          boardHtml += `<div class="${cellClasses}" data-x="${row}" data-y="${col}" data-player="${playerName}">
-                          <span class="cell-content">${cellContent}</span></div>`;
-        }
-        boardHtml += '</div>';
-      }
-      boardHtml += '</div>';
-
-      return boardHtml;
-    },
-
+    // Aufdecken einer Zelle
     uncoverCell(x, y) {
-      // Add your logic to uncover a cell here
-      console.log(`Uncovering cell at (${x}, ${y})`);
+      console.log(`Aufdecken der Zelle bei (${x}, ${y})`);
+      this.sendVsAction('uncoverCell', { x: x, y: y });
     },
 
+    // Markieren einer Zelle
     flagCell(x, y) {
-      // Add your logic to flag a cell here
-      console.log(`Flagging cell at (${x}, ${y})`);
-    }
+      console.log(`Markieren der Zelle bei (${x}, ${y})`);
+      this.sendVsAction('flagCell', { x: x, y: y });
+    },
+
+    // Behandlung des Spielstarts
+    handleStartGame(data) {
+      console.log("Spiel gestartet:", data);
+      // Hier können Sie zusätzliche Initialisierungen vornehmen
+    },
+
+    // Rendern der Spielerliste (nicht mehr erforderlich, da wir Vue-Datenbindung verwenden)
+    // renderPlayerList(players) {
+    //   // Diese Methode ist jetzt obsolet
+    // },
+
+    // Generieren des Spielbrett-HTMLs für einen Spieler (nicht mehr erforderlich, da dies im GameBoard.vue erledigt wird)
+    // buildGameBoardHtml(data, playerName) {
+    //   // Diese Methode ist jetzt obsolet
+    // },
   }
 };
 </script>
