@@ -14,7 +14,7 @@
 
       <!-- Schwierigkeitsauswahl -->
       <DifficultySelection
-        v-if="modeSelected && !selectedDifficulty"
+        v-if="modeSelected && !selectedDifficulty && (modeSelected !== 'versus' || isFirstPlayer)"
         :mode="modeSelected"
         @selectedDifficulty="handleDifficultySelection"
       />
@@ -26,6 +26,8 @@
         :gameState="gameState"
         :mode="modeSelected"
         :coopBoardData="coopBoardData"
+        :vsBoardData="vsBoardData"
+        :playerId="playerId"
         @game-state-updated="handleGameStateUpdate"
         @send-coop-action="handleCoopAction"
         @send-vs-action="handleVsAction"
@@ -33,7 +35,7 @@
 
       <!-- Spielsteuerung -->
       <GameControls
-        v-if="selectedDifficulty"
+        v-if="selectedDifficulty || players[1]"
         :mode="modeSelected"
         @send-coop-control="handleCoopControl"
         @reset-difficulty="resetDifficulty"
@@ -45,8 +47,11 @@
     <Socket
       ref="socket"
       @build-coop-game-boards="buildCoopGameBoards"
+      @buildVsGameBoards="buildVsGameBoards"
+      @updateFirstPlayerStatus="handleFirstPlayerStatusUpdate"
+      @difficultySet="handleDifficultySet"
+      @playerListUpdated="handlePlayerListUpdate"
     />
-
   </div>
 </template>
 
@@ -74,7 +79,11 @@ export default {
       gameState: "Playing",
       modeSelected: null,
       selectedDifficulty: null,
-      coopBoardData: "",
+      coopBoardData: {},
+      vsBoardData: [],
+      isFirstPlayer: false,
+      players: [],
+      playerId: null,
     };
   },
   methods: {
@@ -96,14 +105,20 @@ export default {
     },
     handleDifficultySelection(difficulty, mode) {
       switch (mode) {
+        case 'single':
+          this.selectedDifficulty = difficulty;
+          break;
         case 'coop':
-          this.$refs.socket.sendCoopAction('setDifficulty', { level: difficulty});
+          this.$refs.socket.sendCoopAction('setDifficulty', { level: difficulty });
+          this.selectedDifficulty = difficulty; // Fügen Sie dies hinzu
           break;
         case 'versus':
-          this.$refs.socket.sendVsAction('setDifficulty', { level: difficulty});
+          this.$refs.socket.sendVsAction('setDifficulty', { level: difficulty });
+          if (this.isFirstPlayer || mode !== 'versus') {
+            this.selectedDifficulty = difficulty;
+          }
           break;
       }
-      this.selectedDifficulty = difficulty;
     },
     handleLoadGame() {
       this.$emit('load-game');
@@ -116,10 +131,18 @@ export default {
       this.coopBoardData = data;
       this.gameState = data.gameState;
       console.log("coopBoardData on GameScreen: ", this.coopBoardData.type);
+
+      this.handleRebuildGameBoard();
+    },
+    buildVsGameBoards(gameStates, playerId) {
+      this.vsBoardData = gameStates;
+      this.playerId = playerId;
       this.handleRebuildGameBoard();
     },
     async handleRebuildGameBoard() {
-      this.$refs.gameBoard.buildGameBoard();
+      if (this.$refs.gameBoard) {
+        this.$refs.gameBoard.buildGameBoard();
+      }
     },
     handleCoopAction(action, x, y) {
       this.$refs.socket.sendCoopAction(action, { x: x, y: y });
@@ -130,12 +153,28 @@ export default {
     handleVsAction(action, x, y) {
       this.$refs.socket.sendVsAction(action, { x: x, y: y });
     },
+    handleFirstPlayerStatusUpdate(isFirstPlayer) {
+      this.isFirstPlayer = isFirstPlayer;
+    },
+    handleDifficultySet(level) {
+      this.selectedDifficulty = level;
+    },
+    handlePlayerListUpdate(players) {
+      this.players = players;
+    },
   },
+  watch: {
+    "players[1]": function (newValue) {
+      if (newValue) {
+        this.handleRebuildGameBoard();
+      }
+    }
+  }
 };
 </script>
 
 <style scoped>
-/* Main Content */
+/* Hauptinhalt */
 #content {
   position: relative;
   z-index: 1;
@@ -152,5 +191,21 @@ export default {
   text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.6);
   font-family: 'Poppins', sans-serif;
   margin-top: 5%;
+}
+
+/* Spielerliste Styling */
+#playersContainer {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.player-item {
+  font-size: 1.2rem;
+  margin: 0.2rem 0;
+}
+
+.player-count {
+  font-weight: bold;
+  margin-top: 0.5rem;
 }
 </style>
