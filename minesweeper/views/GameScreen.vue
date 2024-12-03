@@ -105,6 +105,9 @@ export default {
     },
     handleDifficultySelection(difficulty, mode) {
       switch (mode) {
+        case 'single':
+          this.selectedDifficulty = difficulty;
+          break;
         case 'coop':
           this.$refs.socket.sendCoopAction('setDifficulty', { level: difficulty });
           this.selectedDifficulty = difficulty; // Fügen Sie dies hinzu
