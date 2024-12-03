@@ -134,7 +134,7 @@ section img {
 }
 
 .list-group {
-    width: 100%
+    width: 100%;
     padding: 0; /* Remove extra padding around the list */
     margin: 0; /* Remove extra margin around the list */
 }
