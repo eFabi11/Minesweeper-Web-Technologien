@@ -431,4 +431,38 @@ export default {
     font-size: 12px;
   }
 }
+
+/**/
+
+#you-lost img {
+    width: 100%;
+    max-width: 300px; /* Passe die maximale Breite nach Bedarf an */
+    margin: 0 auto;
+    filter: brightness(1) invert(0);
+    display: block;
+    pointer-events: none; /* Verhindert, dass das Bild die Spielfunktion beeinträchtigt */
+    ;
+
+}
+
+#you-lost {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 100; /* Sicherstellen, dass es über anderen Elementen liegt */
+}
+
+.lost-image {
+    width: 100%;
+    max-width: 500px; /* Passe die maximale Breite nach Bedarf an */
+    display: block;
+    pointer-events: none; /* Verhindert, dass das Bild die Spielfunktion beeinträchtigt */
+    opacity: 1;
+}
+
+.lost-image.fade-out {
+    animation: fadeOut 2s forwards;
+}
+
 </style>
