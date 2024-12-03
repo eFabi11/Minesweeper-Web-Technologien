@@ -35,7 +35,7 @@
 
       <!-- Spielsteuerung -->
       <GameControls
-        v-if="selectedDifficulty"
+        v-if="selectedDifficulty || players[1]"
         :mode="modeSelected"
         @send-coop-control="handleCoopControl"
         @reset-difficulty="resetDifficulty"
@@ -163,6 +163,13 @@ export default {
       this.players = players;
     },
   },
+  watch: {
+    "players[1]": function (newValue) {
+      if (newValue) {
+        this.handleRebuildGameBoard();
+      }
+    }
+  }
 };
 </script>
 
