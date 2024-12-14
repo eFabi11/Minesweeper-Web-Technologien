@@ -24,6 +24,7 @@ import Homepage from './views/HomepageScreen.vue';
 import GameScreen from './views/GameScreen.vue';
 import LoadGameScreen from './views/LoadGameScreen.vue';
 
+
 export default {
   components: {
     Homepage,
@@ -40,6 +41,7 @@ export default {
       this.currentScreen = 'home';
     },
     startGame(mode) {
+      console.log("Gewählte Schwierigkeit:", mode); // Jetzt ist mode "benutzt"
       this.$refs.homepage.removeEventlisteners();
       this.currentScreen = 'game';
     },

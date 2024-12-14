@@ -21,7 +21,7 @@ export default {
     header {
         color: white;
         padding: 160px 0;
-        background-image: url('../../public/images/Minesweeper_picture.webp');
+        background-image: url('@/assets/Minesweeper_picture.webp');
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;

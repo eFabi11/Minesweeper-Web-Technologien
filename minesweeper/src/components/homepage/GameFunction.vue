@@ -13,7 +13,7 @@
 
 <script>
 export default {
-  name: "Function"
+  name: "GameFunction"
 };
 </script>
 

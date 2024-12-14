@@ -23,12 +23,12 @@
 
 <script>
 /* Imports of Components for Homepage */
-import Header from '../components/homepage/Header.vue';
-import Navbar from '../components/homepage/Navbar.vue';
+import Header from '../components/homepage/GameHeader.vue';
+import Navbar from '../components/homepage/GameNavbar.vue';
 import HowToPlay from '../components/homepage/HowToPlay.vue';
-import History from '../components/homepage/History.vue';
-import Function from '../components/homepage/Function.vue';
-import Visuals from '../components/homepage/Visuals.vue';
+import History from '../components/homepage/GameHistory.vue';
+import Function from '../components/homepage/GameFunction.vue';
+import Visuals from '../components/homepage/GameVisuals.vue';
 import FeedbackForm from '../components/homepage/FeedbackForm.vue';
 import StartGame from '../components/homepage/StartGame.vue';
 
@@ -70,7 +70,7 @@ export default {
       });
     });
   },
-  beforeDestroy() {
+  beforeUnmount() {
     // Clean up event listeners when the component is destroyed
     window.removeEventListener('scroll', this.handleScroll);
     window.removeEventListener('load', this.onLoad);

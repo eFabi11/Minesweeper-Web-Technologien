@@ -7,7 +7,6 @@
 </template>
 
 <script>
-import axios from 'axios';  // Import axios
 
 const backendUrl = 'http://localhost:9000';
 
@@ -43,7 +42,8 @@ export default {
           body: params.toString(),
         })
           .then(response => response.json())
-          .then(data => {
+          .then( data => {
+            console.log('Difficulty set:', data);
             this.$emit("selectedDifficulty", diff, "single");
           })
           .catch(error => {

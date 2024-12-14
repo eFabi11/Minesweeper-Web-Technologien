@@ -8,6 +8,7 @@
 </template>
 
 <script>
+
 export default {
   props: {
     mode: {
@@ -30,10 +31,6 @@ export default {
           body: params.toString(), // Empty params for the undo action
         })
           .then(response => response.json())
-          .then(data => {
-            console.log('Undo successful');
-            this.$emit('game-state-updated', data.gameState);
-          })
           .catch(error => {
             console.error('Error undoing:', error);
             alert('Error undoing. Please check the server response.');
@@ -57,11 +54,6 @@ export default {
           body: params.toString(), // Empty params for the restart action
         })
           .then(response => response.json())
-          .then(data => {
-            console.log('Restart successful');
-            this.$emit('reset-difficulty');
-            this.$emit('game-state-updated', data.gameState);
-          })
           .catch(error => {
             console.error('Error restarting:', error);
             alert('Error restarting. Please check the server response.');
@@ -77,6 +69,7 @@ export default {
       })
         .then(response => response.json())
         .then(data => {
+          console.log('data set:', data);
           console.log('Save game successful');
         })
         .catch(error => {

@@ -56,13 +56,13 @@
 </template>
 
 <script>
-import Background from '../components/game/Background.vue';
-import Navbar from '../components/game/Navbar.vue';
+import Background from '../components/game/GameBackground.vue';
+import Navbar from '../components/game/GameNavbar.vue';
 import ModeSelection from '../components/game/ModeSelection.vue';
 import DifficultySelection from '../components/game/DifficultySelection.vue';
 import GameBoard from '../components/game/GameBoard.vue';
 import GameControls from '../components/game/GameControls.vue';
-import Socket from '../components/game/Socket.vue';
+import Socket from '../components/game/GameSocket.vue';
 
 export default {
   components: {

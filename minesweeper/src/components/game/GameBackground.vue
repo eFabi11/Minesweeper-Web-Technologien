@@ -1,7 +1,7 @@
 <template>
   <div id="background">
     <video autoplay loop muted playsinline>
-      <source src="/app/assets/Minesweeper.mp4" type="video/mp4" />
+      <source src="../../assets/Minesweeper.mp4" type="video/mp4" />
     </video>
   </div>
 </template>
@@ -10,7 +10,7 @@
 
 <script>
 export default {
-  name: "Background",
+  name: "GameBackground",
 };
 </script>
 

@@ -3,7 +3,6 @@
 </template>
 
 <script>
-import { watch } from "vue";
 
 export default {
   data() {

@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "Header"
+  name: "GameHeader"
 };
 </script>
 
@@ -14,7 +14,7 @@ export default {
     header {
         color: white;
         padding: 160px 0;
-        background-image: url('../images/Minesweeper_picture.webp');
+        background-image: url("@/assets/Minesweeper_picture.webp");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;

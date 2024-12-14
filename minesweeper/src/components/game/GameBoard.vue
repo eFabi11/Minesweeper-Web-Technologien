@@ -3,7 +3,7 @@
     <!-- Versus Mode -->
     <div v-if="mode === 'versus'" class="vs-mode">
       <div
-        v-for="(board, index) in vsGameBoards"
+        v-for="(board) in vsGameBoards"
         :key="board.playerId"
         class="player-board"
       >
@@ -25,7 +25,7 @@
             <span class="cell-content">
               <!-- Dynamic cell content -->
               <template v-if="cellValue === '*'">
-                <img src="./assets/Mine.png" alt="💣" class="mine-icon" />
+                <img src="@/assets/Mine.png" alt="💣" class="mine-icon">
               </template>
               <template v-else-if="cellValue === 'f'">
                 &#x1F6A9; <!-- Flag emoji -->
@@ -61,7 +61,7 @@
           <span class="cell-content">
             <!-- Dynamic cell content -->
             <template v-if="cell.state === 'bomb'">
-              <img src="./assets/Mine.png" alt="💣" class="mine-icon" />
+              <img src="@/assets/Mine.png" alt="💣" class="mine-icon" />
             </template>
             <template v-else-if="cell.state === 'flag'">
               &#x1F6A9; <!-- Flag emoji -->
@@ -79,7 +79,7 @@
 
     <!-- Game over message -->
     <div v-if="gameState === 'Lost'" id="you-lost">
-      <img src="../../app/assets/you_lost.png" alt="You Lost" class="lost-image" />
+      <img src="@/assets/you_lost.png" alt="You Lost" />
     </div>
   </div>
 </template>

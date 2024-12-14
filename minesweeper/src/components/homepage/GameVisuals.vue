@@ -4,19 +4,19 @@
         <div class="row">
             <div class="col-sm">
                 <figure>
-                    <img src="../../app/assets/EmptyField.png" class="img-fluid visual-image" alt="View of the new Game" title="Empty Field">
+                    <img src="../../assets/EmptyField.png" class="img-fluid visual-image" alt="View of the new Game" title="Empty Field">
                     <figcaption>View of the new Game</figcaption>
                 </figure>
             </div>
             <div class="col-sm">
                 <figure>
-                    <img src="../../app/assets/Numbers.png" class="img-fluid visual-image" alt="Mark of the Numbers" title="Numbers">
+                    <img src="../../assets/Numbers.png" class="img-fluid visual-image" alt="Mark of the Numbers" title="Numbers">
                     <figcaption>Mark of the Numbers</figcaption>
                 </figure>
             </div>
             <div class="col-sm">
                 <figure>
-                    <img src="../../app/assets/FlagBomb.png" class="img-fluid visual-image" alt="Flagged Bomb" title="Flag Bomb">
+                    <img src="../../assets/FlagBomb.png" class="img-fluid visual-image" alt="Flagged Bomb" title="Flag Bomb">
                     <figcaption>Flagged Bomb</figcaption>
                 </figure>
             </div>
@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: "Visuals"
+  name: "GameVisuals"
 };
 </script>
 

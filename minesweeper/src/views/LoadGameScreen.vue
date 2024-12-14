@@ -9,9 +9,9 @@
 </template>
 
 <script>
-import Header from '../components/loadGame/Header.vue';
+import Header from '../components/loadGame/GameHeader.vue';
 import GamesList from '../components/loadGame/GamesList.vue';
-import Footer from '../components/loadGame/Footer.vue';
+import Footer from '../components/loadGame/GameFooter.vue';
 
 export default {
   name: "LoadGamePage",
