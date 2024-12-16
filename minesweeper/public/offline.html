@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Offline - Minesweeper</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: sans-serif;
+      background: #e0e0e0;
+      color: #333;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+    }
+
+    header {
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 10px 0;
+      font-size: 1.5rem;
+    }
+
+    .offline-info {
+      margin: 20px 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 20px;
+      max-width: 400px;
+      text-align: center;
+    }
+
+    .offline-info h2 {
+      margin-top: 0;
+      font-size: 1.2rem;
+    }
+
+    .tips, .scores, .demo-board {
+      margin-top: 20px;
+      background: #fafafa;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px 15px;
+      max-width: 400px;
+    }
+
+    h3 {
+      margin-top: 0;
+      font-size: 1rem;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 5px;
+    }
+
+    .tips ul, .scores ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .tips li, .scores li {
+      margin-bottom: 5px;
+    }
+
+    .demo-board {
+      display: flex;
+      flex-wrap: wrap;
+      width: 120px; /* 8 Felder mal 15px + Ränder */
+      margin: 20px auto;
+      justify-content: center;
+    }
+
+    .cell {
+      width: 15px;
+      height: 15px;
+      background: #ccc;
+      border: 1px solid #999;
+      display: inline-block;
+      margin: 1px;
+      text-align: center;
+      font-size: 0.8rem;
+      line-height: 15px;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .cell.mine {
+      background: #f66;
+    }
+
+    .cell.number-1 { color: blue; }
+    .cell.number-2 { color: green; }
+    .cell.number-3 { color: red; }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Minesweeper - Offline</h1>
+  </header>
+  
+  <div class="offline-info">
+    <h2>Keine Verbindung!</h2>
+    <p>Du bist derzeit offline. Leider können wir das aktuelle Spiel nicht laden oder synchronisieren.</p>
+    <p>Während du offline bist, kannst du dir aber gerne noch einmal die Regeln anschauen, Tipps lesen oder deine bisherigen Highscores betrachten.</p>
+  </div>
+
+  <div class="tips">
+    <h3>Spielregeln & Tipps</h3>
+    <ul>
+      <li>Enthülle Felder und vermeide Minen.</li>
+      <li>Zahlen geben an, wie viele Minen in den angrenzenden Feldern liegen.</li>
+      <li>Setze Flaggen auf mögliche Minenfelder.</li>
+      <li>Strategie: Beginne in einer Ecke oder einem Randbereich, um mehr freie Felder aufzudecken.</li>
+    </ul>
+  </div>
+
+  <div class="demo-board">
+    <!-- Statisches Mini-Board als Beispiel -->
+    <!-- Du kannst hier ein kleines Muster hinterlegen -->
+    <div class="cell number-1">1</div><div class="cell"> </div><div class="cell number-2">2</div><div class="cell"> </div><div class="cell mine">*</div><div class="cell"> </div><div class="cell number-1">1</div><div class="cell"> </div>
+  </div>
+
+  <footer>
+    Sobald du wieder online bist, kannst du zu deinem Spiel zurückkehren.
+  </footer>
+
+  <script>
+    // Beispiel: Highscores aus dem localStorage laden
+    // Angenommen, wir haben sie als Array von Objekten gespeichert: [{name: "Player1", score: 120}, ...]
+    const scores = JSON.parse(localStorage.getItem('minesweeperScores')) || [];
+    const scoreList = document.getElementById('scoreList');
+
+    if (scores.length === 0) {
+      scoreList.innerHTML = '<li>Noch keine Highscores vorhanden</li>';
+    } else {
+      scores.forEach(s => {
+        const li = document.createElement('li');
+        li.textContent = s.name + ': ' + s.score + ' Sekunden';
+        scoreList.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
