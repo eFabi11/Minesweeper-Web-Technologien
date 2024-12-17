@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "register-service-worker": "^1.7.2"
+  },
+  "devDependencies": {
+    "@vue/cli-plugin-pwa": "~5.0.0"
+  }
+}
