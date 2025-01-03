@@ -1,1 +1,1 @@
-web: npm run dev --prefix minesweeper
+web: npm run serve --prefix minesweeper
