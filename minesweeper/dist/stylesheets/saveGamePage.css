@@ -1,0 +1,275 @@
+@import url(https://fonts.googleapis.com/css?family=Bitter);
+@import url('https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css');
+
+/* General Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    min-height: 100%;
+    font-family: 'Bitter', 'Arial', sans-serif;
+}
+
+body {
+    background-color: #f5f5f5;
+    color: #333;
+    text-align: center;
+}
+
+/* Header Styles */
+header {
+    color: white;
+    padding: 160px 0;
+    background-image: url('../images/Minesweeper_picture.webp');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+#title {
+    font-size: 6.5rem;
+    font-weight: bold;
+}
+
+#header-scroll {
+    transition: height 0.5s ease, padding 0.5s ease;
+}
+
+#header-scroll.small {
+    height: 50px;
+    padding: 10px 0;
+}
+
+#header-scroll h1 {
+    transition: font-size 0.3s ease;
+}
+
+#header-scroll.small h1 {
+    font-size: 1.5rem;
+}
+
+/* Active section styling */
+section.active {
+    border: 2px solid #007bff;
+    background-color: rgba(0, 123, 255, 0.04);
+}
+
+nav a.active {
+    color: #007bff;
+    font-weight: bold;
+}
+
+/* Navbar Styles */
+#navbar {
+    padding: 0.5rem 1rem;
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+}
+
+.nav-link {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Section Styles */
+section {
+    padding: 20px;
+    margin: 20px auto;
+    max-width: 900px;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    border-bottom: 1px solid #ccc;
+    padding-top: 80px;
+    scroll-margin-top: 80px;
+}
+
+section img {
+    border-radius: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: stretch;
+    height: auto;
+}
+
+#content {
+    width: 100%;
+    padding: 10px;
+    margin: 0;
+    height: auto;
+}
+
+/* List Group Styles */
+.list-group-item {
+    position: relative;
+    display: flex;               /* Ensures items are placed horizontally */
+    align-items: center;
+    justify-content: space-between; /* Distributes space between content */
+    padding: 5px 15px;           /* Reduced padding for space optimization */
+    background-color: rgba(255, 255, 255, 0.9);
+    border: none;
+    border-radius: 5px;
+    margin-bottom: 5px;          /* Optional: Adjust the space between items */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+    width: 100%;                 /* Ensure the list item spans the full width */
+}
+
+.list-group {
+    width: 100%;
+    padding: 0; /* Remove extra padding around the list */
+    margin: 0; /* Remove extra margin around the list */
+}
+
+.list-group-item .btn {
+    flex-shrink: 0; /* Prevent buttons from shrinking */
+    margin-left: 10px; /* Adds space between the buttons */
+}
+
+.list-group-item .btn-info,
+.list-group-item .btn-danger {
+    flex-shrink: 0; /* Prevents buttons from shrinking */
+}
+
+/* Ensure text content or game names take available space */
+.list-group-item .game-name {
+    flex-grow: 1;
+    text-align: left;
+}
+
+.list-group-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* Styling for the figure caption (footnote) */
+figure {
+    display: inline-block;
+    text-align: center;
+    margin: 15px auto;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+figure:hover {
+    transform: scale(1.015);
+}
+
+/* Hover effect for images specifically */
+.visual-image {
+    border-radius: 8px;
+    display: block;
+    margin: 0 auto;
+}
+
+/* Styling for the figure caption (footnote) */
+figcaption {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 8px;
+    font-style: italic;
+    transition: text-shadow 0.3s ease-in-out;
+}
+
+/* Headings */
+h1 {
+    font-size: 6.5rem;
+    color: white;
+}
+
+h2 {
+    color: #007bff;
+    margin-top: 15px;
+}
+
+p {
+    text-align: justify;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+
+/* Custom styles for the Start Game button */
+.start-game-button {
+    font-size: 2.5rem;
+    padding: 15px 30px;
+    border-radius: 8px;
+    background-color: #28a745;
+    color: white;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+    transition: background-color 0.5s, transform 0.5s;
+}
+
+.start-game-button:hover {
+    background-color: #218838;
+    transform: scale(1.25);
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    #title {
+        font-size: 4rem;
+    }
+
+    .start-game-button {
+        font-size: 1.8rem;
+        padding: 10px 20px;
+    }
+
+    .container {
+        padding: 15px;
+    }
+
+    header {
+        padding: 80px 0;
+    }
+}
+
+@media (max-width: 576px) {
+    #title {
+        font-size: 2.5rem;
+    }
+
+    .start-game-button {
+        font-size: 1.5rem;
+        padding: 8px 16px;
+    }
+
+    .container {
+        padding: 10px;
+    }
+
+    header {
+        padding: 60px 0;
+    }
+}
+
+/* Bootstrap Overrides */
+.navbar {
+    background-color: #007bff;
+}
+
+.navbar-nav .nav-item .nav-link {
+    color: white !important;
+}
+
+.navbar-nav .nav-item .nav-link.active {
+    font-weight: bold;
+    color: #ffc107 !important;
+}
