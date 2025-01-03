@@ -1,6 +1,7 @@
 {
   "dependencies": {
-    "register-service-worker": "^1.7.2"
+    "register-service-worker": "^1.7.2",
+    "vue-gtag": "^2.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-pwa": "~5.0.0"
