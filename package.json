@@ -8,7 +8,7 @@
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "heroku-postbuild": "npm run build",
-    "start": "node minesweeper/src/main.js"
+    "start": "serve -s dist -l $PORT"
   },
 
   "dependencies": {
