@@ -146,6 +146,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
   }
 
   def loadGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>
+    val field = loadXML(gameId)
     gameController.setField(loadXML(gameId))
     gameController.setFirstMove(false)
     gameController.game.gameState = GameStatus.Playing
@@ -155,7 +156,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
     val headContent = "<head>" + (htmlContent.split("<body>").head) + "</head>"
     val bodyContent = htmlContent.split("<body>").last.split("</body>").head
 
-    Future.successful(Ok(Json.obj("success" -> true, "head" -> headContent, "body" -> bodyContent)))
+    Future.successful(Ok(Json.obj("success" -> true, "field" -> field.toString)))
   }
 
   def deleteGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>

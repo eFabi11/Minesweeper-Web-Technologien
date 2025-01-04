@@ -1,7 +1,9 @@
 <template>
   <div>
     <Header />
-    <GamesList />
+    <GamesList
+        @load-game="handleLoadGame"
+    />
     <Footer
         @start-new-game="startNewGame"
     />
@@ -24,7 +26,10 @@ export default {
   methods: {
     startNewGame() {
       this.$emit('start-new-game');
-    }
+    },
+    handleLoadGame() {
+      this.$emit('load-existing-game');
+    },
   }
 };
 </script>

@@ -6,7 +6,7 @@
         v-if="currentScreen === 'home'"
         @start-game="startGame"
       />
-      <GameScreen
+      <GameScreen ref="GameScreen"
         v-else-if="currentScreen === 'game'"
         @load-game="loadGame"
         @return-to-home="returnToHome"
@@ -14,6 +14,7 @@
       <LoadGameScreen
         v-else-if="currentScreen === 'loadGame'"
         @start-new-game="startNewGame"
+        @load-existing-game="loadExistingGame"
       />
     </div>
   </div>
@@ -50,6 +51,13 @@ export default {
     },
     startNewGame() {
       this.currentScreen = 'game';
+    },
+    loadExistingGame() {
+      this.currentScreen = 'game';
+      this.$nextTick(() => {
+        this.$refs.GameScreen.modeSelected = 'single'
+        this.$refs.GameScreen.selectedDifficulty = 'M'
+      })
     },
   },
 };

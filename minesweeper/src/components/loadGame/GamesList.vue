@@ -39,12 +39,12 @@ export default {
       axios
         .post(`http://localhost:9000/loadGame/${gameId}`)
         .then((response) => {
-          document.head.innerHTML = response.data.head;
-          document.body.innerHTML = response.data.body;
+            console.log(response.data.field);
         })
         .catch((error) => {
           alert(`Error loading game: ${error}`);
         });
+        this.$emit('load-game');
     },
     deleteGame(gameId) {
       axios
