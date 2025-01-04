@@ -16,4 +16,4 @@ hs_err_pid*
 /minesweeper/saves
 /minesweeper/node_modules/*
 /minesweeper/coverage
-node_modules
+/node_modules
