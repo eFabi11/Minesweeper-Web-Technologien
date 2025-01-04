@@ -1,18 +1,22 @@
 {
-  "name": "",
-  "version": "",
+  "name": "minesweeper",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "dev": "vue-cli-service serve",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "dev": "vite",
-    "preview": "vite preview"
+    "heroku-postbuild": "npm run build",
+    "start": "serve -s dist -l $PORT"
   },
+
   "dependencies": {
     "axios": "^1.7.8",
     "core-js": "^3.8.3",
     "mock-socket": "^9.3.1",
+    "serve": "^14.2.4",
+    "vite": "^6.0.1",
     "vue": "^3.2.13",
     "vue-gtag": "^2.0.1"
   },
@@ -34,8 +38,7 @@
     "jquery": "^3.7.1",
     "jsdom": "^25.0.1",
     "puppeteer": "^23.8.0",
-    "sinon": "^11.1.2",
-    "vite": "^6.0.1"
+    "sinon": "^11.1.2"
   },
   "eslintConfig": {
     "root": true,
@@ -56,7 +59,5 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ],
-  "_id": "@",
-  "readme": "ERROR: No README data found!"
+  ]
 }
