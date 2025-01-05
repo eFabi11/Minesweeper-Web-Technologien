@@ -35,6 +35,7 @@ export default {
             console.error('Error undoing:', error);
             alert('Error undoing. Please check the server response.');
           });
+          this.$emit("reload-gameboard");
       }
     },
     restart() {
@@ -51,13 +52,14 @@ export default {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-          body: params.toString(), // Empty params for the restart action
+            body: params.toString(), // Empty params for the restart action
         })
-          .then(response => response.json())
-          .catch(error => {
-            console.error('Error restarting:', error);
-            alert('Error restarting. Please check the server response.');
-          });
+        .then(response => response.json())
+        .catch(error => {
+          console.error('Error restarting:', error);
+          alert('Error restarting. Please check the server response.');
+        });
+        this.$emit("reload-gameboard");
       }
     },
     saveGame() {

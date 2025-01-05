@@ -41,6 +41,7 @@
         @reset-difficulty="resetDifficulty"
         @load-game="handleLoadGame"
         @game-state-updated="handleGameStateUpdate"
+        @reload-gameboard="handleRebuildGameBoard"
       />
     </div>
 
