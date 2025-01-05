@@ -10,7 +10,6 @@ target
 /.settings
 /RUNNING_PID
 hs_err_pid*
-/project/build.properties
 /.metals
 /.minesweeper/null
 /minesweeper/saves
