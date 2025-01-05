@@ -29,8 +29,6 @@ import org.apache.pekko.stream.scaladsl._
 import play.api.libs.streams.ActorFlow
 import scala.concurrent.Future
 
-
-
 @Singleton
 class HomeController @Inject()(val controllerComponents: ControllerComponents)(implicit system: ActorSystem, mat: Materializer) extends BaseController {
 
@@ -147,14 +145,9 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
 
   def loadGame(gameId: String) = Action.async { implicit request: Request[AnyContent] =>
     val field = loadXML(gameId)
-    gameController.setField(loadXML(gameId))
+    gameController.setField(field)
     gameController.setFirstMove(false)
     gameController.game.gameState = GameStatus.Playing
-
-    val htmlContent = views.html.gameGui().toString
-
-    val headContent = "<head>" + (htmlContent.split("<body>").head) + "</head>"
-    val bodyContent = htmlContent.split("<body>").last.split("</body>").head
 
     Future.successful(Ok(Json.obj("success" -> true, "field" -> field.toString)))
   }
@@ -197,7 +190,7 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
     }
     field
   }
-  
+
   def moveAndRename(): Unit = {
     val savesDir = new File("saves")
     if (!savesDir.exists()) savesDir.mkdirs()
@@ -216,32 +209,29 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
     if (fileNumbers.isEmpty) 1 else fileNumbers.max + 1
   }
 
-  def getGamesList() = Action { implicit request =>
-    val games = listSavedGamesImpl()
-    val gamesJson = Json.toJson(games.map { case (gameId, fileName) =>
-      Json.obj("gameId" -> gameId, "fileName" -> fileName)
-    })
-    Ok(Json.obj("games" -> gamesJson))
-  }
-
-
   def listSavedGamesImpl(): Seq[(String, String)] = {
     val savesDir = Paths.get("saves")
     if (!Files.exists(savesDir)) {
-        // Create the "saves" directory if it doesn't exist
-        Files.createDirectories(savesDir)
+      Files.createDirectories(savesDir)
     }
     val saveFiles = Files.list(savesDir)
       .filter(p => p.toString.endsWith(".xml"))
       .collect(Collectors.toList())
       .asScala
 
-    val games = saveFiles.map(file => {
-        val fileName = file.getFileName.toString
-        val gameId = fileName.substring(0, fileName.lastIndexOf("."))
-        (gameId, fileName)
+    saveFiles.map(file => {
+      val fileName = file.getFileName.toString
+      val gameId = fileName.stripSuffix(".xml")
+      (gameId, fileName)
+    }).toSeq
+  }
+
+  def getGamesList() = Action { implicit request =>
+    val games = listSavedGamesImpl()
+    val gamesJson = Json.toJson(games.map { case (gameId, fileName) =>
+      Json.obj("gameId" -> gameId, "fileName" -> fileName)
     })
-    games.toSeq
+    Ok(Json.obj("games" -> gamesJson))
   }
 
   def coopSocket(gameId: String) = WebSocket.accept[JsValue, JsValue] { request =>
@@ -256,5 +246,4 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
       VsClientActor.props(gameId, playerId, out, vsGameSessions)
     }
   }
-
 }
