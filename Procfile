@@ -1,1 +1,1 @@
-web: cd minesweeper && npm run serve
+web: npm run serve
