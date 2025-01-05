@@ -1,1 +1,1 @@
-web: concurrently "npm run serve" "sbt run"
+web: npm start
