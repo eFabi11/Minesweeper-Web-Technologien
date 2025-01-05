@@ -10,11 +10,11 @@ target
 /.settings
 /RUNNING_PID
 hs_err_pid*
-/minesweeper/project/build.properties
+/project/build.properties
 /.metals
 /.minesweeper/null
 /minesweeper/saves
-/minesweeper/node_modules/*
+/node_modules/*
 /minesweeper/coverage
 /node_modules
 /.vscode
