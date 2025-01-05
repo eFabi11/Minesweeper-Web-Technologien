@@ -16,3 +16,5 @@ hs_err_pid*
 /minesweeper/saves
 /minesweeper/node_modules
 /minesweeper/coverage
+/node_modules
+/minesweeper/package-lock.json
