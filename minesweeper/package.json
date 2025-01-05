@@ -2,7 +2,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "vite preview"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",
