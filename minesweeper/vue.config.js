@@ -1,5 +1,4 @@
-const { defineConfig } = require('@vue/cli-service')
-module.exports = defineConfig({
+module.exports = {
   pwa: {
     name: "Minesweeper",
     themeColor: "#4DBA87",
@@ -10,7 +9,7 @@ module.exports = defineConfig({
       background_color: "#ffffff",
       icons: [
         {
-          src: "./src/assets/Mine.png", // Stelle sicher, dass dieser Pfad existiert
+          src: "./src/assets/Mine.png",
           sizes: "192x192",
           type: "image/png"
         },
@@ -23,4 +22,4 @@ module.exports = defineConfig({
     }
   },
   transpileDependencies: true
-})
+}
