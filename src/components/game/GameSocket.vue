@@ -21,7 +21,7 @@ export default {
     connectCoopWebSocket() {
       this.gameID = prompt("Geben Sie eine Spiel-ID ein, um einem Spiel beizutreten oder ein neues Spiel zu erstellen:", "game_" + Date.now());
 
-      const socketUrl = `ws://localhost:9000/coop/ws/${this.gameID}`;
+      const socketUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname === 'localhost' ? 'localhost:9000' : window.location.host}/coop/ws/${this.gameID}`;
       console.log("Verbindung zum WebSocket unter URL herstellen:", socketUrl);
       this.coopSocket = new WebSocket(socketUrl);
 
@@ -72,7 +72,7 @@ export default {
         this.vsSocket.close();
       }
 
-      const socketUrl = `ws://localhost:9000/vs/ws/${this.gameID}/${this.playerId}`;
+      const socketUrl = `${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${window.location.hostname === 'localhost' ? 'localhost:9000' : window.location.host}/vs/ws/${this.gameID}/${this.playerId}`;
       console.log("Verbindung zum Versus WebSocket unter URL herstellen:", socketUrl);
 
       this.vsSocket = new WebSocket(socketUrl);

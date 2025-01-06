@@ -8,7 +8,7 @@
 
 <script>
 
-const backendUrl = 'http://localhost:9000';
+const backendUrl = process.env.VUE_APP_BACKEND_URL || `${window.location.origin}`;
 
 export default {
   props: {

@@ -8,6 +8,7 @@
 </template>
 
 <script>
+const backendUrl = process.env.VUE_APP_BACKEND_URL || `${window.location.origin}`;
 
 export default {
   props: {
@@ -23,7 +24,7 @@ export default {
       } else if (this.mode === "single") {
         const params = new URLSearchParams();
 
-        fetch('http://localhost:9000/game/undo', {
+        fetch('${backendUrl}/game/undo', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -47,7 +48,7 @@ export default {
         // Send a POST request to restart the game
         const params = new URLSearchParams();
 
-        fetch('http://localhost:9000/game/restart', {
+        fetch('${backendUrl}/game/restart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -66,7 +67,7 @@ export default {
       console.log("Save game action triggered");
 
       // Send AJAX request to save the game
-      fetch('http://localhost:9000/game/save', {
+      fetch('${backendUrl}/game/save', {
         method: 'POST',
       })
         .then(response => response.json())
