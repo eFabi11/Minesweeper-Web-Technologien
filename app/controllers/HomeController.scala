@@ -91,17 +91,26 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
 
   def setDifficulty = Action { implicit request: Request[AnyContent] =>
     gameController.restart()
-    val diff = request.body.asFormUrlEncoded.get("level").head.toString
-    val selectedStrategy: DifficultyStrategy = diff match {
-      case "E" | "easy" => new EasyDifficulty
-      case "M" | "medium" => new MediumDifficulty
-      case "H" | "hard" => new HardDifficulty
-      case _ =>
-        println("Invalid input, defaulting to Easy")
-        new EasyDifficulty
+    request.body.asFormUrlEncoded.flatMap(_.get("level").flatMap(_.headOption)) match {
+      case Some(diff) =>
+        val selectedStrategy: DifficultyStrategy = diff match {
+          case "E" | "easy"   => new EasyDifficulty
+          case "M" | "medium" => new MediumDifficulty
+          case "H" | "hard"   => new HardDifficulty
+          case _ =>
+            println("Invalid input, defaulting to Easy")
+            new EasyDifficulty
+        }
+        gameController.setDifficulty(selectedStrategy)
+        Ok(Json.obj(
+          "success" -> true,
+          "difficulty" -> diff,
+          "gameState" -> gameController.game.gameState.toString
+        )).as("application/json")
+      case None =>
+        BadRequest(Json.obj("success" -> false, "message" -> "Missing or invalid difficulty level"))
+          .as("application/json")
     }
-    gameController.setDifficulty(selectedStrategy)
-    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString)).as("application/json")
   }
 
   def uncoverField = Action { implicit request =>
