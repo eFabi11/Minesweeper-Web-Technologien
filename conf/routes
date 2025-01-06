@@ -34,4 +34,7 @@ GET     /coop/ws/:gameId            controllers.HomeController.coopSocket(gameId
 
 GET     /vs/ws/:gameId/:playerId    controllers.HomeController.vsWebSocket(gameId: String, playerId: String)
 
-
+# API Endpunkte
+GET     /api/game/getGameBoard          controllers.HomeController.getGameBoard()
+POST    /api/game/uncover               controllers.HomeController.uncoverField()
+POST    /api/game/setDifficulty         controllers.HomeController.setDifficulty()
