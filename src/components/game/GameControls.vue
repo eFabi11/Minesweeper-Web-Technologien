@@ -24,7 +24,7 @@ export default {
       } else if (this.mode === "single") {
         const params = new URLSearchParams();
 
-        fetch('${backendUrl}/game/undo', {
+        fetch(`${backendUrl}/game/undo`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
@@ -36,11 +36,10 @@ export default {
             console.error('Error undoing:', error);
             alert('Error undoing. Please check the server response.');
           });
-          this.$emit("reload-gameboard");
+        this.$emit("reload-gameboard");
       }
     },
     restart() {
-
       if (this.mode === "coop") {
         this.$emit("send-coop-control", "restart");
       } else if (this.mode === "single") {
@@ -48,18 +47,18 @@ export default {
         // Send a POST request to restart the game
         const params = new URLSearchParams();
 
-        fetch('${backendUrl}/game/restart', {
+        fetch(`${backendUrl}/game/restart`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
           },
-            body: params.toString(), // Empty params for the restart action
+          body: params.toString(), // Empty params for the restart action
         })
-        .then(response => response.json())
-        .catch(error => {
-          console.error('Error restarting:', error);
-          alert('Error restarting. Please check the server response.');
-        });
+          .then(response => response.json())
+          .catch(error => {
+            console.error('Error restarting:', error);
+            alert('Error restarting. Please check the server response.');
+          });
         this.$emit("reload-gameboard");
       }
     },
@@ -67,7 +66,7 @@ export default {
       console.log("Save game action triggered");
 
       // Send AJAX request to save the game
-      fetch('${backendUrl}/game/save', {
+      fetch(`${backendUrl}/game/save`, {
         method: 'POST',
       })
         .then(response => response.json())
