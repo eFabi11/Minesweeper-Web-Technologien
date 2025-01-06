@@ -11,7 +11,6 @@ scalaVersion := "2.13.15"
 libraryDependencies ++= Seq(
   guice, // Dependency Injection
   "com.typesafe.play" %% "play-json" % "2.9.4", // JSON Support
-  "org.scalatestplus.play" %% "scalatestplus-play" % "7.0.1" % Test // Test Framework
 )
 
 // Add unmanaged libraries (e.g., custom JARs) in the "lib" folder
