@@ -180,7 +180,7 @@ export default {
         try {
           const response = await axios.post(`${backendUrl}/game/getGameBoard`);
           const data = response.data;
-          console.log("Game board data received from server");
+          console.log("Game board data received from server", data);
 
           gameBoardData.value = {
             rows: data.cells,
