@@ -41,17 +41,7 @@ export default {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: params.toString(),
         })
-          .then(response => {
-            if (!response.ok) {
-              throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const contentType = response.headers.get('content-type');
-            if (contentType && contentType.includes('application/json')) {
-              return response.json(); // Parse as JSON
-            } else {
-              throw new Error('Server did not return JSON');
-            }
-          })
+          .then(response => response.json())
           .then( data => {
             console.log('Difficulty set:', data);
             this.$emit("selectedDifficulty", diff, "single");
