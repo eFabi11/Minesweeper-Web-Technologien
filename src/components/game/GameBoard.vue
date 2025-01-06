@@ -178,7 +178,7 @@ export default {
 
       if (props.mode === "single") {
         try {
-          const response = await axios.post(`${backendUrl}/game/getGameBoard`);
+          const response = await axios.post(`${backendUrl}game/getGameBoard`);
           const data = response.data;
           console.log("Game board data received from server", data);
 
@@ -210,7 +210,7 @@ export default {
 
     const displayBombs = async () => {
       try {
-        const response = await axios.post(`${backendUrl}/game/getBombMatrix`);
+        const response = await axios.post(`${backendUrl}game/getBombMatrix`);
         const bombMatrix = response.data;
         console.log("Bomb matrix received from server:", bombMatrix);
 
@@ -245,7 +245,7 @@ export default {
         params.append("x", x);
         params.append("y", y);
 
-        fetch(`${backendUrl}/game/uncover`, {
+        fetch(`${backendUrl}game/uncover`, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: params.toString(),
@@ -272,7 +272,7 @@ export default {
         params.append("x", x);
         params.append("y", y);
 
-        fetch(`${backendUrl}/game/flag`, {
+        fetch(`${backendUrl}game/flag`, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
           body: params.toString(),
