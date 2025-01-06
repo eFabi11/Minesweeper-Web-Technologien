@@ -22,5 +22,8 @@ module.exports = defineConfig({
       ]
     }
   },
-  transpileDependencies: true
+  transpileDependencies: true,
+  publicPath: './',
+  outputDir:'dist',
+  assetsDir:'static'
 })

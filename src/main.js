@@ -2,8 +2,10 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import VueGtag from 'vue-gtag';
 
-new Vue({
-    router,
-    store,
-    render: h => h(App)
-}).$mount('#app');
+const app = createApp(App);
+
+app.use(VueGtag, {
+  config: { id: "G-XXXXXXXXXX" }, // Replace with your Measurement ID
+});
+
+createApp(App).mount('#app')
