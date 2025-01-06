@@ -41,7 +41,7 @@ export default {
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: params.toString(),
         })
-          .then(response => response.json())
+
           .then( data => {
             console.log('Difficulty set:', data);
             this.$emit("selectedDifficulty", diff, "single");
