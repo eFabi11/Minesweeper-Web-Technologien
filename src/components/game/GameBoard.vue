@@ -178,7 +178,7 @@ export default {
 
       if (props.mode === "single") {
         try {
-          const response = await axios.post(`${backendUrl}api/game/getGameBoard`);
+          const response = await axios.post(`${backendUrl}game/getGameBoard`);
           const data = response.data;
           console.log("Game board data received from server", data);
 

@@ -8,10 +8,10 @@ GET     /                           controllers.HomeController.gameHomepage()
 POST    /game                       controllers.HomeController.gameGui()
 POST    /game/load                  controllers.HomeController.loadGamePage()
 
-POST    /api/game/getGameBoard          controllers.HomeController.getGameBoard()
+POST    /game/getGameBoard          controllers.HomeController.getGameBoard()
 
 POST    /game/setDiff               controllers.HomeController.setDifficulty()
-POST    /api/game/setDifficulty         controllers.HomeController.setDifficulty()
+POST    /game/setDifficulty         controllers.HomeController.setDifficulty()
 
 POST    /game/uncover               controllers.HomeController.uncoverField()
 POST    /game/flag                  controllers.HomeController.flagField()

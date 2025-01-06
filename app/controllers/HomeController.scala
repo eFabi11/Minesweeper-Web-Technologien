@@ -101,7 +101,10 @@ class HomeController @Inject()(val controllerComponents: ControllerComponents)(i
         new EasyDifficulty
     }
     gameController.setDifficulty(selectedStrategy)
-    Ok(Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString)).as("application/json")
+    val responseJson = Json.obj("success" -> true, "gameState" -> gameController.game.gameState.toString)
+    println(s"Response JSON: ${responseJson.toString()}")
+    Ok(responseJson).as(ContentTypes.JSON)
+
   }
 
   def uncoverField = Action { implicit request =>

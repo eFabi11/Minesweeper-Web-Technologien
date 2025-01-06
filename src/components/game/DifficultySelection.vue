@@ -36,7 +36,7 @@ export default {
         params.append('level', diff);
 
         // Use fetch to send a POST request to set the difficulty
-        fetch(`${backendUrl}api/game/setDifficulty`, {
+        fetch(`${backendUrl}game/setDifficulty`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
           body: params.toString(),
