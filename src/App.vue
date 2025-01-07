@@ -4,7 +4,13 @@
       <Homepage
         ref="homepage"
         v-if="currentScreen === 'home'"
+        :singedIn="singedIn"
         @start-game="startGame"
+        @log-out="logout"
+      />
+      <RegisterScreen
+        v-if="currentScreen === 'register'"
+        @singed-in = "redirect"
       />
       <GameScreen ref="GameScreen"
         v-else-if="currentScreen === 'game'"
@@ -22,19 +28,21 @@
 
 <script>
 import Homepage from './views/HomepageScreen.vue';
+import RegisterScreen from './views/RegisterScreen.vue';
 import GameScreen from './views/GameScreen.vue';
 import LoadGameScreen from './views/LoadGameScreen.vue';
-
 
 export default {
   components: {
     Homepage,
+    RegisterScreen,
     GameScreen,
     LoadGameScreen,
   },
   data() {
     return {
-      currentScreen: 'home', // Mögliche Werte: 'home', 'game', 'loadGame',
+      currentScreen: 'home', // Mögliche Werte: 'home', 'register', 'game', 'loadGame',
+      singedIn: false,
     };
   },
   methods: {
@@ -42,9 +50,13 @@ export default {
       this.currentScreen = 'home';
     },
     startGame(mode) {
-      console.log("Gewählte Schwierigkeit:", mode); // Jetzt ist mode "benutzt"
-      this.$refs.homepage.removeEventlisteners();
-      this.currentScreen = 'game';
+      if(this.singedIn === false) {
+        this.currentScreen = 'register';
+      } else {
+        console.log("Gewählte Schwierigkeit:", mode); // Jetzt ist mode "benutzt"
+        this.$refs.homepage.removeEventlisteners();
+        this.currentScreen = 'game';
+      }
     },
     loadGame() {
       this.currentScreen = 'loadGame';
@@ -59,6 +71,14 @@ export default {
         this.$refs.GameScreen.selectedDifficulty = 'M'
       })
     },
+    redirect() {
+      this.singedIn = true;
+      this.currentScreen = 'game';
+    },
+    logout() {
+      this.singedIn = false;
+      this.currentScreen = 'home';
+    }
   },
 };
 </script>

@@ -17,7 +17,13 @@
       <section id="feedback" class="container mt-4">
         <FeedbackForm />
       </section>
-      <StartGame @start-game="startGame" />
+      <StartGame
+        @start-game="startGame"
+      />
+      <LogOut
+        v-if="this.singedIn === true"
+        @log-out="logOut"
+      />
   </div>
 </template>
 
@@ -31,6 +37,7 @@ import Function from '../components/homepage/GameFunction.vue';
 import Visuals from '../components/homepage/GameVisuals.vue';
 import FeedbackForm from '../components/homepage/FeedbackForm.vue';
 import StartGame from '../components/homepage/StartGame.vue';
+import LogOut from '../components/homepage/LogOut.vue';
 
 export default {
   components: {
@@ -41,7 +48,13 @@ export default {
     Function,
     Visuals,
     FeedbackForm,
-    StartGame
+    StartGame,
+    LogOut
+  },
+  props: {
+    singedIn: {
+      type: Boolean,
+    },
   },
   data() {
     return {
@@ -122,7 +135,10 @@ export default {
       // Clean up event listeners when the component is destroyed
       window.removeEventListener('scroll', this.handleScroll);
       window.removeEventListener('load', this.onLoad);
-    }
+    },
+    logOut() {
+      this.$emit('log-out');
+    },
   }
 };
 </script>
