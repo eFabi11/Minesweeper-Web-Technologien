@@ -10,7 +10,7 @@
       />
       <RegisterScreen
         v-if="currentScreen === 'register'"
-        @singed-in = "redirect"
+        @signed-in = "redirect"
       />
       <GameScreen ref="GameScreen"
         v-else-if="currentScreen === 'game'"
